@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "samples": [
+    { "id": "flute", "label": "Flute", "file": "flute.wav", "rootNote": 60, "loopStart": 0.110, "loopEnd": 3.500, "crossfade": 0.100 },
+    { "id": "flute2", "label": "Flute 2", "file": "flute2.wav", "rootNote": 60, "loopStart": 0.000, "loopEnd": 3.356, "crossfade": 0.100 },
+    { "id": "oboe", "label": "Oboe", "file": "oboe.wav", "rootNote": 48, "loopStart": 0.000, "loopEnd": 2.710, "crossfade": 0.100 },
+    { "id": "ocarina", "label": "Ocarina", "file": "ocarina.wav", "rootNote": 60, "loopStart": 0.000, "loopEnd": 2.892, "crossfade": 0.100 },
+    { "id": "organ1", "label": "Organ 1", "file": "organ1.wav", "rootNote": 48, "loopStart": 0.000, "loopEnd": 3.794, "crossfade": 0.100 },
+    { "id": "organ2", "label": "Organ 2", "file": "organ2.wav", "rootNote": 60, "loopStart": 0.000, "loopEnd": 3.089, "crossfade": 0.100 },
+    { "id": "pipe", "label": "Pipe", "file": "pipe.wav", "rootNote": 48, "loopStart": 0.000, "loopEnd": 4.874, "crossfade": 0.100 },
+    { "id": "telephone", "label": "Telephone", "file": "telephone.wav", "rootNote": 65, "loopStart": 0.000, "loopEnd": 3.610, "crossfade": 0.100 },
+    { "id": "whistle", "label": "Whistle", "file": "whistle.wav", "rootNote": 72, "loopStart": 0.000, "loopEnd": 2.154, "crossfade": 0.100 },
+    { "id": "brass", "label": "Brass", "file": "brass.wav", "rootNote": 48, "loopStart": 0.000, "loopEnd": 4.550, "crossfade": 0.100 },
+    { "id": "elec-brass", "label": "Elec brass", "file": "elec-brass.wav", "rootNote": 36, "loopStart": 0.000, "loopEnd": 4.786, "crossfade": 0.100 },
+    { "id": "elec-lead", "label": "Elec lead", "file": "elec-lead.wav", "rootNote": 48, "loopStart": 0.000, "loopEnd": 3.173, "crossfade": 0.100 },
+    { "id": "elec-pad1", "label": "Elec pad 1", "file": "elec-pad1.wav", "rootNote": 60, "loopStart": 0.000, "loopEnd": 2.121, "crossfade": 0.100 },
+    { "id": "elec-pad2", "label": "Elec pad 2", "file": "elec-pad2.wav", "rootNote": 60, "loopStart": 0.000, "loopEnd": 2.017, "crossfade": 0.100 }
+  ]
+}
