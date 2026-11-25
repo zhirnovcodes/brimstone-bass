@@ -1,0 +1,231 @@
+/* Brimstone Bass skin: the device (device.svg) with its pixel screen. Every rule sits under .bsb-root.
+   Sizes are Figma px; .bsb-device scales the whole thing by --bsb-scale (DEVICE.scale in skin.ts). */
+
+@font-face {
+    font-family: 'Brimstone Pixel';
+    /* 8-bit Operator+ 8, the Figma font. SIL OFL 1.1: assets/fonts/8bitOperatorPlus-OFL.txt */
+    src: url('./assets/fonts/8bitOperatorPlus8-Regular.ttf') format('truetype');
+    font-display: block;
+}
+
+@font-face {
+    font-family: 'Brimstone Caption';
+    /* Orbitron Bold: the captions on the device frame. SIL OFL 1.1: assets/fonts/Orbitron-OFL.txt */
+    src: url('./assets/fonts/Orbitron-Bold.ttf') format('truetype');
+    font-display: block;
+}
+
+.bsb-root {
+    --bsb-scale: 1; /* DEVICE.scale in skin.ts: Figma size, 100 % */
+    /* Brimstone palette: Figma "Frame 6" (frame, knobs, captions) and "Frame 7" (screen) */
+    --bsb-screen: #ff7a1a;
+    --bsb-bar: #ffb43a;
+    --bsb-face: #ffd9a8;
+    --bsb-face-pressed: #ffecd2;
+    --bsb-ink: #000;
+    --bsb-caption: #ffd9a8;
+    --bsb-track: #221b18;
+    --bsb-list: #ff9a4d;
+    --bsb-field: rgba(255, 255, 255, 0.21);
+    position: relative;
+    width: calc(260px * var(--bsb-scale));
+    height: calc(306px * var(--bsb-scale));
+    user-select: none;
+    -webkit-user-select: none;
+    overflow: hidden;
+}
+
+.bsb-root *,
+.bsb-root *::before,
+.bsb-root *::after {
+    box-sizing: border-box;
+}
+
+.bsb-device {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 260px;
+    height: 306px;
+    transform: scale(var(--bsb-scale));
+    transform-origin: 0 0;
+}
+
+.bsb-device-svg {
+    position: absolute;
+    left: 0;
+    top: 0;
+    filter: drop-shadow(0 4px 5px rgba(43, 29, 26, 0.45));
+}
+
+/* Captions printed on the frame (device.svg g.captions) */
+.bsb-root .captions {
+    font-family: 'Brimstone Caption', sans-serif;
+    font-weight: 700;
+    fill: var(--bsb-caption);
+    pointer-events: none;
+}
+
+/* Frame knobs */
+.bsb-root .knob {
+    cursor: ns-resize;
+    outline: none;
+}
+.bsb-root .knob:focus-visible {
+    filter: brightness(1.12);
+}
+
+/* The screen */
+.bsb-screen {
+    position: absolute;
+    overflow: hidden;
+    border-radius: 13px;
+    background: var(--bsb-screen);
+    color: var(--bsb-ink);
+    font-family: 'Brimstone Pixel', ui-monospace, monospace;
+    -webkit-font-smoothing: none;
+    font-smooth: never;
+}
+
+.bsb-screen div,
+.bsb-screen button {
+    position: absolute;
+}
+
+.bsb-page[hidden],
+.bsb-screen [hidden] {
+    display: none;
+}
+
+.bsb-bar {
+    background: var(--bsb-bar);
+}
+.bsb-header {
+    border-radius: 13px 13px 0 0;
+}
+.bsb-footer {
+    border-radius: 0 0 13px 13px;
+}
+
+.bsb-text {
+    white-space: nowrap;
+}
+/* Figma's text sizes. Line heights are Figma's text boxes, so a text sits where Figma puts it. */
+.bsb-t10 {
+    font-size: 10px;
+    line-height: 12px;
+}
+.bsb-t12 {
+    font-size: 12px;
+    line-height: 14px;
+}
+.bsb-t16 {
+    font-size: 16px;
+    line-height: 18px;
+}
+.bsb-center {
+    transform: translateX(-50%);
+}
+.bsb-output {
+    width: 125px;
+    overflow: hidden;
+}
+
+.bsb-icon {
+    line-height: 0;
+    pointer-events: none;
+}
+.bsb-mirror {
+    transform: scaleX(-1);
+}
+.bsb-open .bsb-arrow-down {
+    transform: rotate(180deg);
+}
+
+/* Buttons: peach face, 1 px shadow down-right; pressed sits on the shadow */
+.bsb-btn {
+    padding: 0;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    background: var(--bsb-face);
+    box-shadow: 1px 1px 0 var(--bsb-shadow, #4a403c);
+    color: var(--bsb-ink);
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    cursor: pointer;
+    outline: none;
+}
+.bsb-btn > .bsb-icon {
+    /* icons keep their Figma offset inside the button */
+    position: absolute;
+}
+.bsb-btn:active,
+.bsb-btn.bsb-pressed {
+    background: var(--bsb-face-pressed);
+    box-shadow: none;
+    transform: translate(1px, 1px);
+}
+.bsb-btn:focus-visible,
+.bsb-slider:focus-visible {
+    outline: 1px dotted var(--bsb-ink);
+    outline-offset: 1px;
+}
+
+/* Fields */
+.bsb-field {
+    background: var(--bsb-field);
+    overflow: hidden;
+}
+.bsb-field-center {
+    text-align: center;
+}
+
+/* Sliders */
+.bsb-slider {
+    cursor: ew-resize;
+    touch-action: none;
+    outline: none;
+}
+.bsb-track,
+.bsb-dot {
+    background: var(--bsb-track);
+}
+.bsb-handle {
+    background: var(--bsb-face);
+    box-shadow: 1px 1px 0 #687d85;
+}
+
+/* Drop-down lists */
+.bsb-list {
+    z-index: 2;
+    background: var(--bsb-list);
+    box-shadow: 1px 1px 0 #4a403c;
+}
+.bsb-list-rows {
+    overflow: hidden;
+}
+.bsb-list-row {
+    line-height: 13px;
+    overflow: hidden;
+    cursor: pointer;
+}
+.bsb-list-row:hover {
+    background: rgba(255, 255, 255, 0.35);
+}
+.bsb-list-row[aria-selected='true'] {
+    background: rgba(255, 255, 255, 0.6);
+}
+.bsb-scroll-line {
+    transform-origin: 0 0;
+    transform: rotate(90deg) translateY(-2px);
+    pointer-events: auto;
+    cursor: pointer;
+}
+.bsb-thumb {
+    cursor: grab;
+    touch-action: none;
+}

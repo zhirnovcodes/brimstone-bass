@@ -1,0 +1,81 @@
+name: DAW plugin
+
+# Builds the IvanDAW web plugin (build/web/dist-daw/) and, on master, publishes it as
+# brimstone-bass-daw.zip in a daw-build-<run number> release. IvanDAW downloads a pinned release
+# (ivan-daw plugins/brimstone-bass/package.json). The zip's root is the content of dist-daw/, so index.js sits
+# at the top level. The core tests run here too until the JUCE workflows arrive.
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+  pull_request:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Ninja
+        run: sudo apt-get update && sudo apt-get install -y ninja-build
+
+      - name: Core tests
+        run: |
+          cmake -S . -B build/vst -G Ninja -DCMAKE_BUILD_TYPE=Release
+          cmake --build build/vst --target bb_tests
+          ./build/vst/bb_tests
+
+      - name: Set up emscripten
+        uses: mymindstorm/setup-emsdk@v14
+        with:
+          # The version the local wasm build uses.
+          version: 6.0.12
+          actions-cache-folder: emsdk-cache
+
+      - name: Build wasm
+        run: |
+          emcmake cmake -S . -B build/web -G Ninja -DCMAKE_BUILD_TYPE=Release
+          cmake --build build/web --target brimstone-bass
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Build DAW plugin
+        run: pnpm --filter @brimstone-bass/web build:daw
+
+      - name: Zip
+        working-directory: build/web/dist-daw
+        run: |
+          test -f index.js && test -f processor.js && test -f brimstone-bass.wasm && test -f manifest.json
+          # Every sample samples.json lists (build:daw already fails on a missing one).
+          node -e 'for (const s of require(process.argv[1]).samples) require("fs").accessSync("samples/" + s.file)' "$GITHUB_WORKSPACE/samples/samples.json"
+          zip -r "$GITHUB_WORKSPACE/brimstone-bass-daw.zip" .
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: brimstone-bass-daw
+          path: brimstone-bass-daw.zip
+
+      - name: Publish release
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: daw-build-${{ github.run_number }}
+          name: DAW build ${{ github.run_number }}
+          target_commitish: ${{ github.sha }}
+          make_latest: true
+          files: brimstone-bass-daw.zip
+          body: |
+            IvanDAW web plugin, built from ${{ github.sha }}.
+            Unzip as the plugin folder: index.js is at the top level.

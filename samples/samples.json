@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "samples": [
+    { "id": "brass2", "label": "Brass 2", "file": "brass2.wav", "rootNote": 36, "attack": 0.12, "loop": 4.518, "release": 0.641 },
+    { "id": "elec-bass", "label": "E.Bass", "file": "elec-bass.wav", "rootNote": 36, "attack": 0.05, "loop": 0.061, "release": 0.283 },
+    { "id": "elec-brass", "label": "E.Brass", "file": "elec-brass.wav", "rootNote": 36, "attack": 0.55, "loop": 4.338, "release": 0.077 },
+    { "id": "slap-bass", "label": "Slap", "file": "slap-bass.wav", "rootNote": 36, "attack": 0.05, "loop": 0.061, "release": 0.283 },
+    { "id": "sub", "label": "Sub", "file": "sub.wav", "rootNote": 36, "attack": 0.14, "loop": 14.755, "release": 0.624 },
+    { "id": "elec-piano", "label": "E.Piano", "file": "elec-piano.wav", "rootNote": 36, "attack": 0.889, "loop": 0.888, "release": 3.946 },
+    { "id": "organ", "label": "Organ", "file": "organ.wav", "rootNote": 36, "attack": 0.555, "loop": 3.365, "release": 1.359 }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "name": "@brimstone-bass/web",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "build:daw": "tsc --noEmit && vitest run && vite build --config vite.daw.config.ts"
+  },
+  "dependencies": {
+    "ivandaw-core": "github:zhirnovcodes/ivan-daw-core#v0.2.0"
+  },
+  "devDependencies": {
+    "typescript": "^7.0.2",
+    "vite": "^8.3.4",
+    "vitest": "^5.1.1"
+  }
+}
