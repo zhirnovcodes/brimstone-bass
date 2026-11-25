@@ -7,8 +7,10 @@ export interface SampleInfo {
     label: string
     file: string
     rootNote: number // the MIDI note the sample plays as recorded
-    loopStart: number // seconds: a note starts here...
-    loopEnd: number // ...and loops back from here
+    // Seconds of the recording (see core/domain/SamplePlayer.h):
+    attack: number // [0, attack): played once at the note's start
+    loop: number // [attack, attack + loop): repeats while the note sounds; 0 = no loop, plays through
+    release: number // the file's last `release` seconds: the tail, played as the note dies; 0 = no tail
     crossfade?: number // seconds of overlap at the loop seam; missing = the core's default (0.1 s)
 }
 

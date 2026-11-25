@@ -3,7 +3,7 @@ import { buildState, readState } from './state'
 import { mountSkin, type SkinBridge } from './ui/skin'
 import skinCss from './ui/skin.css?inline'
 
-// Skin preview (pnpm dev → http://localhost:5280/): the UI alone, on an in-memory bridge. No audio.
+// Skin preview (pnpm dev → http://localhost:5280/preview.html): the UI alone, on an in-memory bridge. No audio.
 // Query: ?screen=0..6 opens a screen; &open=1 opens its drop-down; &hover=<param id> shows that output line.
 
 const values = new Map(PARAMS.map((p) => [p.id, toNormalized(p, p.default)]))

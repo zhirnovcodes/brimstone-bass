@@ -153,6 +153,7 @@ describe('output line', () => {
         expect(out('lfo3Amp', 0.5)).toBe('LFO 3 AMP. 0.5')
         expect(out('osc1Attack', 0)).toBe('ATTACK 0.01 S')
         expect(out('osc1Release', 1)).toBe('RELEASE 8.00 S')
+        expect(out('osc2Release', toPlain(PARAMS[idx('osc2Release')], toNormalized(PARAMS[idx('osc2Release')], PARAMS[idx('osc2Release')].default)))).toBe('RELEASE 0.20 S') // default
         expect(out('osc1Decay', 1)).toBe('DECAY 8.00 S')
         expect(out('osc2Sustain', 0.5)).toBe('SUSTAIN 0.5')
         expect(out('lfo1Offset', 1)).toBe('PHASE OFFSET 360')
@@ -160,7 +161,7 @@ describe('output line', () => {
         expect(out('lfo1Map', 1)).toBe('FIL1 FRQ')
         expect(out('lfo1Retrig', 0)).toBe('RETRIG FALSE')
         expect(out('osc1On', 1)).toBe('ON/OFF TRUE')
-        expect(out('osc1Sample', 1)).toBe('SAMPLE FLUTE 2')
+        expect(out('osc1Sample', 0)).toBe('SAMPLE BRASS 2')
         expect(out('mixType', 0)).toBe('OSC MIX LINEAR')
         expect(out('mixType', 1)).toBe('OSC MIX EQ. POW.')
         expect(out('delayTime1', 0)).toBe('DEL.1 TIME 1/16T')
@@ -309,11 +310,11 @@ describe('presenters', () => {
         const views = fakeViews()
         mount(bridge, views)
         const osc = views.osc[1]
-        expect((osc.state.SampleList as string[])[0]).toBe('FLUTE')
+        expect((osc.state.SampleList as string[])[0]).toBe('BRASS 2')
         osc.openSampleClicked.emit(undefined)
-        osc.sampleSelected.emit(2)
-        expect(osc.state).toMatchObject({ Sample: 'OBOE', SampleValue: 2 })
-        expect(bridge.value('osc2Sample')).toBeCloseTo(2 / 13)
+        osc.sampleSelected.emit(4)
+        expect(osc.state).toMatchObject({ Sample: 'SUB', SampleValue: 4, SampleListOpen: false })
+        expect(bridge.value('osc2Sample')).toBeCloseTo(4 / 6)
     })
 
     it('osc: octave arrows step -2..+2 and stop at the ends', () => {

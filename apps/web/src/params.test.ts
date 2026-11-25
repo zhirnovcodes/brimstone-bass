@@ -61,7 +61,9 @@ describe('params.json', () => {
         expect(param('osc1Sample').choices).toEqual(labels)
         expect(param('osc2Sample').choices).toEqual(labels)
         for (const s of SAMPLES) {
-            expect(s.loopEnd, s.id).toBeGreaterThan(s.loopStart)
+            expect(s.attack, s.id).toBeGreaterThanOrEqual(0)
+            expect(s.loop, s.id).toBeGreaterThanOrEqual(0)
+            expect(s.release, s.id).toBeGreaterThanOrEqual(0)
             expect(s.rootNote, s.id).toBeGreaterThanOrEqual(0)
             expect(s.rootNote, s.id).toBeLessThanOrEqual(127)
         }
