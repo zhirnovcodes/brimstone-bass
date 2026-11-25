@@ -1,7 +1,7 @@
 # Brimstone Bass: rules for agents
 
 Brimstone Bass is an audio instrument (bass generator) built from one C++ core: an IvanDAW web plugin (wasm,
-Plugin API v2) and, later, a JUCE plugin (VST3, AU, Standalone). It is Axolotl Pad (C:\Work\AxolotlPad,
+Plugin API v2) and a JUCE plugin (VST3, AU, Standalone) whose window is the same web skin. It is Axolotl Pad (C:\Work\AxolotlPad,
 zhirnovcodes/axolotl-pad) with a different oscillator: read Axolotl's code first when something here is unclear.
 
 Guide: ivan-daw `docs/plugin-dev/` (README, 01-architecture, types/audio-instrument.md, 03-web-host, 04-vst-host, 05-ci-cd).
@@ -23,6 +23,7 @@ note -> detune + octave -> SamplePlayer (attack piece, loop on repeat, tail in t
 | Repo / wasm / zip | `brimstone-bass` / `brimstone-bass.wasm` / `brimstone-bass-daw.zip` |
 | IvanDAW id | `com.ivandaw.brimstone-bass` |
 | C ABI prefix / namespace / CSS prefix | `bb_` / `bb::` / `bsb-` |
+| JUCE target / AU codes | `BrimstoneBass` / manufacturer `Ivdw`, plugin `Bsb1` |
 
 ## Folder map
 
@@ -36,7 +37,8 @@ note -> detune + octave -> SamplePlayer (attack piece, loop on repeat, tail in t
 | `apps/web/src/ui/` | the skin; talks only to `SkinBridge` |
 | `samples/` | built-in samples + `samples.json` (root note; attack, loop, release in seconds) |
 | `params.json` | the only parameter list; CMake writes `ParamsJson.h` from it |
-| `tests/` | `bb_tests` (core) |
+| `hosts/plugin/` | JUCE processor, state JSON (same as web), editor (web view), `ui/index.html` |
+| `tests/` | `bb_tests` (core); `plugin/` `bb_plugin_tests` (JUCE host) |
 
 ## Commands
 
@@ -50,6 +52,10 @@ cmake --build build/web --target brimstone-bass
 pnpm install
 pnpm --filter @brimstone-bass/web build:daw
 pnpm --filter @brimstone-bass/web dev   # http://localhost:5280/ (plugin, keyboard A–K) · /preview.html (skin only)
+# JUCE plugin (Windows / macOS; -DBB_PLUGIN=OFF skips it). Reuses the local JUCE checkout instead of downloading:
+cmake -S . -B build/vst -G "Visual Studio 17 2022" -DFETCHCONTENT_SOURCE_DIR_JUCE=C:/Work/Beatality/third_party/JUCE
+cmake --build build/vst --config Release --target bb_plugin_tests BrimstoneBass_VST3 BrimstoneBass_Standalone -- -m:1 -p:CL_MPCount=2
+# Artefacts: build/vst/BrimstoneBass_artefacts/Release/{VST3,Standalone}/
 ```
 
 ## Rules

@@ -1,0 +1,110 @@
+name: Windows build
+
+# Builds the VST3 and Standalone (x64), checks them (pluginval, plugin tests) and uploads a zip for testing.
+# Code signing and an installer come later.
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+    paths:
+      - "core/**"
+      - "hosts/plugin/**"
+      - "apps/web/src/**"
+      - "apps/web/vite.vst.config.ts"
+      - "samples/**"
+      - "tests/**"
+      - "params.json"
+      - "CMakeLists.txt"
+      - ".github/workflows/windows.yml"
+  pull_request:
+    paths:
+      - "core/**"
+      - "hosts/plugin/**"
+      - "apps/web/src/**"
+      - "apps/web/vite.vst.config.ts"
+      - "samples/**"
+      - "tests/**"
+      - "params.json"
+      - "CMakeLists.txt"
+      - ".github/workflows/windows.yml"
+
+env:
+  # The WebView2 SDK JUCE links statically (the window works without a separate runtime install).
+  # Same version as the local build.
+  WEBVIEW2_VERSION: 1.0.3485.44
+
+jobs:
+  build:
+    runs-on: windows-2025
+    timeout-minutes: 60
+    env:
+      ARTEFACTS: build/vst/BrimstoneBass_artefacts/Release
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache JUCE download
+        uses: actions/cache@v4
+        with:
+          path: build/vst/_deps
+          key: juce-${{ runner.os }}-${{ hashFiles('CMakeLists.txt') }}
+
+      - name: WebView2 SDK
+        shell: bash
+        run: |
+          dir="$RUNNER_TEMP/nuget/Microsoft.Web.WebView2.$WEBVIEW2_VERSION"
+          mkdir -p "$dir"
+          curl -sL -o webview2.zip "https://www.nuget.org/api/v2/package/Microsoft.Web.WebView2/$WEBVIEW2_VERSION"
+          unzip -q webview2.zip -d "$dir"
+          test -f "$dir/build/native/x64/WebView2LoaderStatic.lib"
+
+      # The plugin window is the web skin; CMake bundles it with Vite.
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - name: Install web tools
+        run: pnpm install --frozen-lockfile
+
+      - uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Configure
+        shell: bash
+        run: cmake -S . -B build/vst -G Ninja -DCMAKE_BUILD_TYPE=Release -DJUCE_WEBVIEW2_PACKAGE_LOCATION="$RUNNER_TEMP/nuget"
+
+      - name: Build plugin
+        run: cmake --build build/vst --target BrimstoneBass_VST3 BrimstoneBass_Standalone bb_plugin_tests
+
+      - name: Validate with pluginval
+        shell: bash
+        run: |
+          curl -sL -o pluginval.zip https://github.com/Tracktion/pluginval/releases/latest/download/pluginval_Windows.zip
+          unzip -q pluginval.zip
+          ./pluginval.exe --strictness-level 10 --skip-gui-tests --validate-in-process "$ARTEFACTS/VST3/Brimstone Bass.vst3"
+
+      - name: Package
+        shell: bash
+        run: |
+          mkdir -p dist/BrimstoneBass-win
+          cp -R "$ARTEFACTS/VST3/Brimstone Bass.vst3" "$ARTEFACTS/Standalone/Brimstone Bass.exe" dist/BrimstoneBass-win/
+          cat > dist/BrimstoneBass-win/README.txt <<'EOF'
+          Brimstone Bass test build (unsigned). Not for distribution.
+
+          Install:
+            Brimstone Bass.vst3  ->  C:\Program Files\Common Files\VST3\  (the whole folder)
+            Brimstone Bass.exe   ->  anywhere (the Standalone)
+
+          Then rescan plugins in the DAW (Ableton: Preferences > Plug-ins > Rescan).
+          EOF
+          cd dist && 7z a -bd BrimstoneBass-win.zip BrimstoneBass-win > /dev/null
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: BrimstoneBass-win
+          path: dist/BrimstoneBass-win.zip
+          retention-days: 14
+
+      # Last, so a failing test still leaves a plugin zip to try. The run is still marked failed.
+      - name: Plugin tests
+        shell: bash
+        run: ./build/vst/bb_plugin_tests_artefacts/Release/bb_plugin_tests.exe

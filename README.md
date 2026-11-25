@@ -5,7 +5,7 @@ Bass generator: MIDI notes in, stereo audio out. Two sample oscillators with an 
 tamagotchi-egg skin as [Axolotl Pad](https://github.com/zhirnovcodes/axolotl-pad).
 
 Status: engine and IvanDAW web plugin working with one placeholder sample (a synthetic C2 bass); the real
-samples are coming. VST3 / AU later. Rules and layout: [CLAUDE.md](CLAUDE.md).
+samples are coming. VST3, AU and Standalone builds come from CI (`windows.yml`, `mac.yml`). Rules and layout: [CLAUDE.md](CLAUDE.md).
 
 ## Try it locally
 
