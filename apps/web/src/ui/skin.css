@@ -107,6 +107,24 @@
     border-radius: 0 0 13px 13px;
 }
 
+/* BRIMSTONE screen: the imp. assets/imp.png is 16 frames of 64 x 64 side by side; 10 frames a second. */
+.bsb-imp {
+    background: url('./assets/imp.png') 0 0 / 1024px 64px no-repeat;
+    image-rendering: pixelated;
+    pointer-events: none;
+    animation: bsb-imp 1.6s steps(16) infinite;
+}
+@keyframes bsb-imp {
+    to {
+        background-position: -1024px 0;
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .bsb-imp {
+        animation: none;
+    }
+}
+
 .bsb-text {
     white-space: nowrap;
 }

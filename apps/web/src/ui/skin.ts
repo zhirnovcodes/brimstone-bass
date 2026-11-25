@@ -2,6 +2,7 @@ import type { FxOrder } from '../params'
 import type { StateData } from '../state'
 import { createUi } from './app'
 import deviceSvg from './assets/device.svg?raw'
+import { BrimstoneDomView } from './dom/brimstoneDom'
 import { DomEvents } from './dom/domEvents'
 import { FrameDomView } from './dom/frameDom'
 import { LfoDomView } from './dom/lfoDom'
@@ -62,11 +63,12 @@ export function mountSkin(container: HTMLElement, bridge: SkinBridge): Skin {
         new LfoDomView(doc, main.pages[Screen.Lfo3], events, 3),
     ] as const
     const mix = new MixDomView(doc, main.pages[Screen.Mix], events)
+    const brimstone = new BrimstoneDomView(doc, main.pages[Screen.Brimstone])
     device.append(main.el)
     root.append(device)
     container.append(root)
 
-    const app = createUi(bridge, { events, main, frame, brimstone: {}, osc: [...osc], lfo: [...lfo], mix })
+    const app = createUi(bridge, { events, main, frame, brimstone, osc: [...osc], lfo: [...lfo], mix })
 
     return {
         root,
