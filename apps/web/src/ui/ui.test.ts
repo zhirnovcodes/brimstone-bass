@@ -317,7 +317,7 @@ describe('presenters', () => {
         expect(bridge.value('osc2Sample')).toBeCloseTo(4 / 6)
     })
 
-    it('osc: octave arrows step -2..+2 and stop at the ends', () => {
+    it('osc: octave arrows step -4..+2 and stop at the ends', () => {
         const { bridge } = fakeBridge()
         const views = fakeViews()
         mount(bridge, views)
@@ -328,7 +328,7 @@ describe('presenters', () => {
         for (let i = 0; i < 4; i++) osc.octaveUpClicked.emit(undefined)
         expect(osc.state.Octave).toBe('+2')
         for (let i = 0; i < 9; i++) osc.octaveDownClicked.emit(undefined)
-        expect(osc.state.Octave).toBe('-2')
+        expect(osc.state.Octave).toBe('-4')
         expect(bridge.value('osc1Oct')).toBe(0)
     })
 

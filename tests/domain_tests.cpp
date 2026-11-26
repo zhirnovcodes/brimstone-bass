@@ -26,7 +26,7 @@ void paramsTable() {
     CHECK(kParams[param::lfo2Map].max == lfoTargets - 1);
     CHECK(kParams[param::lfo3Map].max == lfoTargets - 1);
     CHECK(kParams[param::osc1Detune].min == -24.0 && kParams[param::osc1Detune].max == 24.0);
-    CHECK(kParams[param::osc2Oct].min == -2.0 && kParams[param::osc2Oct].max == 2.0);
+    CHECK(kParams[param::osc2Oct].min == -4.0 && kParams[param::osc2Oct].max == 2.0);
     CHECK(std::strcmp(kParams[param::unisonValue].id, "unisonValue") == 0);
 }
 

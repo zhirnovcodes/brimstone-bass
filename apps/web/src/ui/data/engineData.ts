@@ -53,7 +53,7 @@ export interface MappingData {
 export interface OscData {
     on: boolean
     sample: number // index into SAMPLES
-    oct: number // -2..2
+    oct: number // -4..2
     attack: number // 0..1
     decay: number // 0..1 (0.01..8 s)
     sustain: number // 0..1 (level)
