@@ -62,7 +62,7 @@ inline float filterRes(float dryWet) { return lerp(0.0f, 0.5f, clamp01(dryWet));
 inline float filterMix(float dryWet) { return clamp01(dryWet) * 0.88f; }
 inline float unisonCents(float value) { return clamp01(value) * 100.0f; }
 
-// Oscillator pitch: octave offset (-2..+2) and detune (-24..+24 cents) as a playback-rate factor.
+// Oscillator pitch: octave offset (-4..+2) and detune (-24..+24 cents) as a playback-rate factor.
 inline double pitchRatio(int octave, float cents) {
     return std::exp2(static_cast<double>(octave) + static_cast<double>(cents) / 1200.0);
 }

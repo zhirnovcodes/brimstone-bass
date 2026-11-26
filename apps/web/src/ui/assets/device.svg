@@ -1,137 +1,137 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="260" height="306" viewBox="0 0 260 306">
   <title>Brimstone Bass device</title>
   <defs>
-    <path id="bodyPath" d="M130 3 C194 3 232 60 247 124 C259 174 259 224 243 260 C225 297 182 304 130 304 C78 304 35 297 17 260 C1 224 1 174 13 124 C28 60 66 3 130 3 Z"/>
-    <clipPath id="bodyClip"><use href="#bodyPath"/></clipPath>
-    <clipPath id="screenClip"><rect x="63" y="113" width="134" height="134" rx="10"/></clipPath>
+    <path id="bsb-bodyPath" d="M130 3 C194 3 232 60 247 124 C259 174 259 224 243 260 C225 297 182 304 130 304 C78 304 35 297 17 260 C1 224 1 174 13 124 C28 60 66 3 130 3 Z"/>
+    <clipPath id="bsb-bodyClip"><use href="#bsb-bodyPath"/></clipPath>
+    <clipPath id="bsb-screenClip"><rect x="63" y="113" width="134" height="134" rx="10"/></clipPath>
 
     <!-- clear outer shell -->
-    <radialGradient id="shell" cx="0.5" cy="0.5" r="0.55">
+    <radialGradient id="bsb-shell" cx="0.5" cy="0.5" r="0.55">
       <stop offset="0.82" stop-color="#FFFFFF" stop-opacity="0.04"/>
       <stop offset="0.95" stop-color="#5E1414" stop-opacity="0.7"/>
       <stop offset="1" stop-color="#940000" stop-opacity="1"/>
     </radialGradient>
     <!-- coloured inner egg -->
-    <radialGradient id="inner" cx="0.4" cy="0.3" r="0.85">
+    <radialGradient id="bsb-inner" cx="0.4" cy="0.3" r="0.85">
       <stop offset="0" stop-color="#3E2A25"/>
       <stop offset="0.5" stop-color="#2B1D1A"/>
       <stop offset="1" stop-color="#1C1210"/>
     </radialGradient>
-    <linearGradient id="spec" x1="0" y1="0" x2="1" y2="0.6">
+    <linearGradient id="bsb-spec" x1="0" y1="0" x2="1" y2="0.6">
       <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.95"/>
       <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
     </linearGradient>
-    <linearGradient id="glare" x1="0" y1="0" x2="1" y2="1">
+    <linearGradient id="bsb-glare" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.55"/>
       <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
     </linearGradient>
 
-    <filter id="blur2" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="2"/></filter>
-    <filter id="blur3" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="3"/></filter>
-    <filter id="blur5" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="5"/></filter>
+    <filter id="bsb-blur2" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="2"/></filter>
+    <filter id="bsb-blur3" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="3"/></filter>
+    <filter id="bsb-blur5" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="5"/></filter>
     <!-- faint milky haze inside the clear plastic -->
-    <filter id="haze" x="0" y="0" width="100%" height="100%">
+    <filter id="bsb-haze" x="0" y="0" width="100%" height="100%">
       <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="3" seed="9" result="n"/>
       <feColorMatrix in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.35 -0.18"/>
     </filter>
     <!-- knob: 18 px cylinder with a bevelled top edge, set into the shell. Light from top-left. -->
-    <linearGradient id="knobBevel" x1="0.15" y1="0.1" x2="0.85" y2="0.9">
+    <linearGradient id="bsb-knobBevel" x1="0.15" y1="0.1" x2="0.85" y2="0.9">
       <stop offset="0" stop-color="#FFA27A"/>
       <stop offset="1" stop-color="#B93A0C"/>
     </linearGradient>
-    <linearGradient id="knobTop" x1="0.2" y1="0.15" x2="0.8" y2="0.85">
+    <linearGradient id="bsb-knobTop" x1="0.2" y1="0.15" x2="0.8" y2="0.85">
       <stop offset="0" stop-color="#FF5A1F"/>
       <stop offset="1" stop-color="#FF6A33"/>
     </linearGradient>
-    <linearGradient id="knobSide" x1="0" y1="0" x2="1" y2="1">
+    <linearGradient id="bsb-knobSide" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#C2410F"/>
       <stop offset="1" stop-color="#6E1F05"/>
     </linearGradient>
-    <radialGradient id="knobDot" cx="0.4" cy="0.35" r="0.65">
+    <radialGradient id="bsb-knobDot" cx="0.4" cy="0.35" r="0.65">
       <stop offset="0" stop-color="#FFE9CC"/>
       <stop offset="1" stop-color="#FFD9A8"/>
     </radialGradient>
-    <filter id="knobBlur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1.5"/></filter>
-    <filter id="knobBlurS" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="0.7"/></filter>
-    <g id="knobBody">
+    <filter id="bsb-knobBlur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1.5"/></filter>
+    <filter id="bsb-knobBlurS" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="0.7"/></filter>
+    <g id="bsb-knobBody">
       <circle r="10.4" fill="#120C0A" opacity="0.6"/>
-      <circle cx="-0.6" cy="-0.9" r="10" fill="#000000" opacity="0.4" filter="url(#knobBlurS)"/>
-      <circle cx="1.6" cy="2.7" r="9" fill="#000000" opacity="0.5" filter="url(#knobBlur)"/>
-      <circle cx="1" cy="1.9" r="9" fill="url(#knobSide)"/>
-      <circle r="9" fill="url(#knobBevel)"/>
-      <circle r="7.1" fill="url(#knobTop)"/>
+      <circle cx="-0.6" cy="-0.9" r="10" fill="#000000" opacity="0.4" filter="url(#bsb-knobBlurS)"/>
+      <circle cx="1.6" cy="2.7" r="9" fill="#000000" opacity="0.5" filter="url(#bsb-knobBlur)"/>
+      <circle cx="1" cy="1.9" r="9" fill="url(#bsb-knobSide)"/>
+      <circle r="9" fill="url(#bsb-knobBevel)"/>
+      <circle r="7.1" fill="url(#bsb-knobTop)"/>
     </g>
     <!-- pointer: light peach dot near the edge of the top face -->
-    <g id="knobPointer">
-      <circle cy="-4.7" r="1.7" fill="url(#knobDot)"/>
+    <g id="bsb-knobPointer">
+      <circle cy="-4.7" r="1.7" fill="url(#bsb-knobDot)"/>
     </g>
     <!-- the maroon (#5E1414) and amber (#FFB43A) knobs: osc vol / pan / detune, LFOs; osc mix -->
     <!-- Frame knob -->
-    <linearGradient id="knobBevelFrame" x1="0.15" y1="0.1" x2="0.85" y2="0.9"><stop offset="0" stop-color="#A33A30"/><stop offset="1" stop-color="#3A0A0A"/></linearGradient>
-    <linearGradient id="knobTopFrame" x1="0.2" y1="0.15" x2="0.8" y2="0.85"><stop offset="0" stop-color="#5E1414"/><stop offset="1" stop-color="#6C1B19"/></linearGradient>
-    <linearGradient id="knobSideFrame" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4A0F0F"/><stop offset="1" stop-color="#260505"/></linearGradient>
-    <g id="knobBodyFrame">
+    <linearGradient id="bsb-knobBevelFrame" x1="0.15" y1="0.1" x2="0.85" y2="0.9"><stop offset="0" stop-color="#A33A30"/><stop offset="1" stop-color="#3A0A0A"/></linearGradient>
+    <linearGradient id="bsb-knobTopFrame" x1="0.2" y1="0.15" x2="0.8" y2="0.85"><stop offset="0" stop-color="#5E1414"/><stop offset="1" stop-color="#6C1B19"/></linearGradient>
+    <linearGradient id="bsb-knobSideFrame" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4A0F0F"/><stop offset="1" stop-color="#260505"/></linearGradient>
+    <g id="bsb-knobBodyFrame">
       <circle r="10.4" fill="#120C0A" opacity="0.6"/>
-      <circle cx="-0.6" cy="-0.9" r="10" fill="#000000" opacity="0.4" filter="url(#knobBlurS)"/>
-      <circle cx="1.6" cy="2.7" r="9" fill="#000000" opacity="0.5" filter="url(#knobBlur)"/>
-      <circle cx="1" cy="1.9" r="9" fill="url(#knobSideFrame)"/>
-      <circle r="9" fill="url(#knobBevelFrame)"/>
-      <circle r="7.1" fill="url(#knobTopFrame)"/>
+      <circle cx="-0.6" cy="-0.9" r="10" fill="#000000" opacity="0.4" filter="url(#bsb-knobBlurS)"/>
+      <circle cx="1.6" cy="2.7" r="9" fill="#000000" opacity="0.5" filter="url(#bsb-knobBlur)"/>
+      <circle cx="1" cy="1.9" r="9" fill="url(#bsb-knobSideFrame)"/>
+      <circle r="9" fill="url(#bsb-knobBevelFrame)"/>
+      <circle r="7.1" fill="url(#bsb-knobTopFrame)"/>
     </g>
-    <g id="knobPointerFrame">
+    <g id="bsb-knobPointerFrame">
       <circle cy="-4.7" r="1.7" fill="#FFD9A8"/>
     </g>
     <!-- Amber knob (ids keep the old "Blue" name) -->
-    <linearGradient id="knobBevelBlue" x1="0.15" y1="0.1" x2="0.85" y2="0.9"><stop offset="0" stop-color="#FFE3A8"/><stop offset="1" stop-color="#B87612"/></linearGradient>
-    <linearGradient id="knobTopBlue" x1="0.2" y1="0.15" x2="0.8" y2="0.85"><stop offset="0" stop-color="#FFB43A"/><stop offset="1" stop-color="#FFC052"/></linearGradient>
-    <linearGradient id="knobSideBlue" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#C98516"/><stop offset="1" stop-color="#7A4A06"/></linearGradient>
-    <g id="knobBodyBlue">
+    <linearGradient id="bsb-knobBevelBlue" x1="0.15" y1="0.1" x2="0.85" y2="0.9"><stop offset="0" stop-color="#FFE3A8"/><stop offset="1" stop-color="#B87612"/></linearGradient>
+    <linearGradient id="bsb-knobTopBlue" x1="0.2" y1="0.15" x2="0.8" y2="0.85"><stop offset="0" stop-color="#FFB43A"/><stop offset="1" stop-color="#FFC052"/></linearGradient>
+    <linearGradient id="bsb-knobSideBlue" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#C98516"/><stop offset="1" stop-color="#7A4A06"/></linearGradient>
+    <g id="bsb-knobBodyBlue">
       <circle r="10.4" fill="#120C0A" opacity="0.6"/>
-      <circle cx="-0.6" cy="-0.9" r="10" fill="#000000" opacity="0.4" filter="url(#knobBlurS)"/>
-      <circle cx="1.6" cy="2.7" r="9" fill="#000000" opacity="0.5" filter="url(#knobBlur)"/>
-      <circle cx="1" cy="1.9" r="9" fill="url(#knobSideBlue)"/>
-      <circle r="9" fill="url(#knobBevelBlue)"/>
-      <circle r="7.1" fill="url(#knobTopBlue)"/>
+      <circle cx="-0.6" cy="-0.9" r="10" fill="#000000" opacity="0.4" filter="url(#bsb-knobBlurS)"/>
+      <circle cx="1.6" cy="2.7" r="9" fill="#000000" opacity="0.5" filter="url(#bsb-knobBlur)"/>
+      <circle cx="1" cy="1.9" r="9" fill="url(#bsb-knobSideBlue)"/>
+      <circle r="9" fill="url(#bsb-knobBevelBlue)"/>
+      <circle r="7.1" fill="url(#bsb-knobTopBlue)"/>
     </g>
-    <g id="knobPointerBlue">
+    <g id="bsb-knobPointerBlue">
       <circle cy="-4.7" r="1.7" fill="#2B1D1A"/>
     </g>
   </defs>
 
-  <g clip-path="url(#bodyClip)">
+  <g clip-path="url(#bsb-bodyClip)">
     <!-- solid dark base: the shell is tinted, not clear, so the page never shows through -->
-    <use href="#bodyPath" fill="#241815"/>
+    <use href="#bsb-bodyPath" fill="#241815"/>
     <!-- inner coloured egg seen through the tinted shell -->
     <!-- soft edge (blurred) so no contour line runs through the knob area -->
     <g transform="translate(130 160) scale(0.92) translate(-130 -160)">
-      <use href="#bodyPath" fill="url(#inner)" filter="url(#blur5)"/>
-      <use href="#bodyPath" fill="none" stroke="#940000" stroke-width="10" opacity="0.35" transform="translate(-4 -5)" filter="url(#blur5)"/>
+      <use href="#bsb-bodyPath" fill="url(#bsb-inner)" filter="url(#bsb-blur5)"/>
+      <use href="#bsb-bodyPath" fill="none" stroke="#940000" stroke-width="10" opacity="0.35" transform="translate(-4 -5)" filter="url(#bsb-blur5)"/>
     </g>
     <!-- clear shell -->
-    <use href="#bodyPath" fill="url(#shell)"/>
-    <rect width="260" height="306" filter="url(#haze)"/>
+    <use href="#bsb-bodyPath" fill="url(#bsb-shell)"/>
+    <rect width="260" height="306" filter="url(#bsb-haze)"/>
     <!-- refraction at the thick lower edge -->
-    <use href="#bodyPath" fill="none" stroke="#940000" stroke-width="8" opacity="0.5" transform="translate(-3 -4)" filter="url(#blur3)"/>
+    <use href="#bsb-bodyPath" fill="none" stroke="#940000" stroke-width="8" opacity="0.5" transform="translate(-3 -4)" filter="url(#bsb-blur3)"/>
   </g>
-  <use href="#bodyPath" fill="none" stroke="#FF5A1F" stroke-width="1.5" opacity="0.35"/>
-  <use href="#bodyPath" fill="none" stroke="#940000" stroke-width="0.8"/>
+  <use href="#bsb-bodyPath" fill="none" stroke="#FF5A1F" stroke-width="1.5" opacity="0.35"/>
+  <use href="#bsb-bodyPath" fill="none" stroke="#940000" stroke-width="0.8"/>
 
   <!-- screen window -->
   <rect x="59" y="109" width="142" height="142" rx="13" fill="#1C1210"/>
   <rect x="59" y="109" width="142" height="142" rx="13" fill="none" stroke="#940000" stroke-opacity="0.9" stroke-width="1.2" transform="translate(0.7 0.9)"/>
   <rect x="63" y="113" width="134" height="134" rx="10" fill="#FF7A1A"/>
-  <g clip-path="url(#screenClip)">
-    <rect x="63" y="113" width="134" height="134" rx="10" fill="none" stroke="#2B1D1A" stroke-width="12" opacity="0.5" transform="translate(3 4)" filter="url(#blur3)"/>
+  <g clip-path="url(#bsb-screenClip)">
+    <rect x="63" y="113" width="134" height="134" rx="10" fill="none" stroke="#2B1D1A" stroke-width="12" opacity="0.5" transform="translate(3 4)" filter="url(#bsb-blur3)"/>
     <!-- glass glare on screen -->
-    <path d="M63 113 H140 L95 247 H63 Z" fill="url(#glare)" opacity="0.35"/>
+    <path d="M63 113 H140 L95 247 H63 Z" fill="url(#bsb-glare)" opacity="0.35"/>
   </g>
 
   <!-- big specular streak along the top-left of the shell -->
-  <path d="M30 128 C40 64 84 18 136 12 C100 32 66 70 50 132 Z" fill="url(#spec)" filter="url(#blur2)" opacity="0.3"/>
-  <path d="M30 128 C40 64 84 18 136 12 C100 32 66 70 50 132 Z" fill="#FFFFFF" opacity="0.12" filter="url(#blur2)"/>
+  <path d="M30 128 C40 64 84 18 136 12 C100 32 66 70 50 132 Z" fill="url(#bsb-spec)" filter="url(#bsb-blur2)" opacity="0.3"/>
+  <path d="M30 128 C40 64 84 18 136 12 C100 32 66 70 50 132 Z" fill="#FFFFFF" opacity="0.12" filter="url(#bsb-blur2)"/>
   <!-- small hot spots -->
-  <ellipse cx="206" cy="66" rx="9" ry="4" transform="rotate(40 206 66)" fill="#FFFFFF" opacity="0.35" filter="url(#blur2)"/>
-  <ellipse cx="34" cy="240" rx="3" ry="14" transform="rotate(-18 34 240)" fill="#FFFFFF" opacity="0.3" filter="url(#blur2)"/>
+  <ellipse cx="206" cy="66" rx="9" ry="4" transform="rotate(40 206 66)" fill="#FFFFFF" opacity="0.35" filter="url(#bsb-blur2)"/>
+  <ellipse cx="34" cy="240" rx="3" ry="14" transform="rotate(-18 34 240)" fill="#FFFFFF" opacity="0.3" filter="url(#bsb-blur2)"/>
 
   <!-- smile: a groove cut into the frame, circular arc centred on the osc-mix knob (lit from top-left) -->
   <g fill="none" stroke-linecap="round">
@@ -159,31 +159,31 @@
   </g>
 
   <!-- knobs. Pointer angle = -135 + 270 * value; 0 deg = up -->
-  <g id="knobs">
-    <g class="knob" data-param="filterDw1" transform="translate(48.3 73.3)"><use href="#knobBody"/><g class="knob-pointer" transform="rotate(-135.0)"><use href="#knobPointer"/></g></g>
-    <g class="knob" data-param="delayDw1" transform="translate(67.1 47.0)"><use href="#knobBody"/><g class="knob-pointer" transform="rotate(-81.0)"><use href="#knobPointer"/></g></g>
-    <g class="knob" data-param="reverbDw1" transform="translate(98.8 24.4)"><use href="#knobBody"/><g class="knob-pointer" transform="rotate(-54.0)"><use href="#knobPointer"/></g></g>
-    <g class="knob" data-param="filterPos1" transform="translate(73.6 87.4)"><use href="#knobBody"/><g class="knob-pointer" transform="rotate(0.0)"><use href="#knobPointer"/></g></g>
-    <g class="knob" data-param="delayTime1" transform="translate(88.4 66.7)"><use href="#knobBody"/><g class="knob-pointer" transform="rotate(51.9)"><use href="#knobPointer"/></g></g>
-    <g class="knob" data-param="reverbFeedback1" transform="translate(109.8 51.2)"><use href="#knobBody"/><g class="knob-pointer" transform="rotate(-81.0)"><use href="#knobPointer"/></g></g>
-    <g class="knob" data-param="filterDw2" transform="translate(211.7 73.3)"><use href="#knobBody"/><g class="knob-pointer" transform="rotate(-135.0)"><use href="#knobPointer"/></g></g>
-    <g class="knob" data-param="delayDw2" transform="translate(192.9 47.0)"><use href="#knobBody"/><g class="knob-pointer" transform="rotate(-81.0)"><use href="#knobPointer"/></g></g>
-    <g class="knob" data-param="reverbDw2" transform="translate(161.2 24.4)"><use href="#knobBody"/><g class="knob-pointer" transform="rotate(-54.0)"><use href="#knobPointer"/></g></g>
-    <g class="knob" data-param="filterPos2" transform="translate(186.4 87.4)"><use href="#knobBody"/><g class="knob-pointer" transform="rotate(0.0)"><use href="#knobPointer"/></g></g>
-    <g class="knob" data-param="delayTime2" transform="translate(171.6 66.7)"><use href="#knobBody"/><g class="knob-pointer" transform="rotate(51.9)"><use href="#knobPointer"/></g></g>
-    <g class="knob" data-param="reverbFeedback2" transform="translate(150.2 51.2)"><use href="#knobBody"/><g class="knob-pointer" transform="rotate(-81.0)"><use href="#knobPointer"/></g></g>
-    <g class="knob" data-param="oscMix" transform="translate(130.0 90.0)"><use href="#knobBodyBlue"/><g class="knob-pointer" transform="rotate(0.0)"><use href="#knobPointerBlue"/></g></g>
-    <g class="knob" data-param="osc1Vol" transform="translate(40.0 150.0)"><use href="#knobBodyFrame"/><g class="knob-pointer" transform="rotate(90.0)"><use href="#knobPointerFrame"/></g></g>
-    <g class="knob" data-param="osc1Pan" transform="translate(40.0 180.0)"><use href="#knobBodyFrame"/><g class="knob-pointer" transform="rotate(0.0)"><use href="#knobPointerFrame"/></g></g>
-    <g class="knob" data-param="osc1Detune" transform="translate(40.0 210.0)"><use href="#knobBodyFrame"/><g class="knob-pointer" transform="rotate(0.0)"><use href="#knobPointerFrame"/></g></g>
-    <g class="knob" data-param="osc2Vol" transform="translate(220.0 150.0)"><use href="#knobBodyFrame"/><g class="knob-pointer" transform="rotate(90.0)"><use href="#knobPointerFrame"/></g></g>
-    <g class="knob" data-param="osc2Pan" transform="translate(220.0 180.0)"><use href="#knobBodyFrame"/><g class="knob-pointer" transform="rotate(0.0)"><use href="#knobPointerFrame"/></g></g>
-    <g class="knob" data-param="osc2Detune" transform="translate(220.0 210.0)"><use href="#knobBodyFrame"/><g class="knob-pointer" transform="rotate(0.0)"><use href="#knobPointerFrame"/></g></g>
-    <g class="knob" data-param="lfo1Amp" transform="translate(80.7 281.6)"><use href="#knobBodyFrame"/><g class="knob-pointer" transform="rotate(-135.0)"><use href="#knobPointerFrame"/></g></g>
-    <g class="knob" data-param="lfo1Time" transform="translate(57.3 274.4)"><use href="#knobBodyFrame"/><g class="knob-pointer" transform="rotate(-7.1)"><use href="#knobPointerFrame"/></g></g>
-    <g class="knob" data-param="lfo2Amp" transform="translate(142.2 285.0)"><use href="#knobBodyFrame"/><g class="knob-pointer" transform="rotate(-135.0)"><use href="#knobPointerFrame"/></g></g>
-    <g class="knob" data-param="lfo2Time" transform="translate(117.8 285.0)"><use href="#knobBodyFrame"/><g class="knob-pointer" transform="rotate(-7.1)"><use href="#knobPointerFrame"/></g></g>
-    <g class="knob" data-param="lfo3Amp" transform="translate(202.7 274.4)"><use href="#knobBodyFrame"/><g class="knob-pointer" transform="rotate(-135.0)"><use href="#knobPointerFrame"/></g></g>
-    <g class="knob" data-param="lfo3Time" transform="translate(179.3 281.6)"><use href="#knobBodyFrame"/><g class="knob-pointer" transform="rotate(-7.1)"><use href="#knobPointerFrame"/></g></g>
+  <g id="bsb-knobs">
+    <g class="knob" data-param="filterDw1" transform="translate(48.3 73.3)"><use href="#bsb-knobBody"/><g class="knob-pointer" transform="rotate(-135.0)"><use href="#bsb-knobPointer"/></g></g>
+    <g class="knob" data-param="delayDw1" transform="translate(67.1 47.0)"><use href="#bsb-knobBody"/><g class="knob-pointer" transform="rotate(-81.0)"><use href="#bsb-knobPointer"/></g></g>
+    <g class="knob" data-param="reverbDw1" transform="translate(98.8 24.4)"><use href="#bsb-knobBody"/><g class="knob-pointer" transform="rotate(-54.0)"><use href="#bsb-knobPointer"/></g></g>
+    <g class="knob" data-param="filterPos1" transform="translate(73.6 87.4)"><use href="#bsb-knobBody"/><g class="knob-pointer" transform="rotate(0.0)"><use href="#bsb-knobPointer"/></g></g>
+    <g class="knob" data-param="delayTime1" transform="translate(88.4 66.7)"><use href="#bsb-knobBody"/><g class="knob-pointer" transform="rotate(51.9)"><use href="#bsb-knobPointer"/></g></g>
+    <g class="knob" data-param="reverbFeedback1" transform="translate(109.8 51.2)"><use href="#bsb-knobBody"/><g class="knob-pointer" transform="rotate(-81.0)"><use href="#bsb-knobPointer"/></g></g>
+    <g class="knob" data-param="filterDw2" transform="translate(211.7 73.3)"><use href="#bsb-knobBody"/><g class="knob-pointer" transform="rotate(-135.0)"><use href="#bsb-knobPointer"/></g></g>
+    <g class="knob" data-param="delayDw2" transform="translate(192.9 47.0)"><use href="#bsb-knobBody"/><g class="knob-pointer" transform="rotate(-81.0)"><use href="#bsb-knobPointer"/></g></g>
+    <g class="knob" data-param="reverbDw2" transform="translate(161.2 24.4)"><use href="#bsb-knobBody"/><g class="knob-pointer" transform="rotate(-54.0)"><use href="#bsb-knobPointer"/></g></g>
+    <g class="knob" data-param="filterPos2" transform="translate(186.4 87.4)"><use href="#bsb-knobBody"/><g class="knob-pointer" transform="rotate(0.0)"><use href="#bsb-knobPointer"/></g></g>
+    <g class="knob" data-param="delayTime2" transform="translate(171.6 66.7)"><use href="#bsb-knobBody"/><g class="knob-pointer" transform="rotate(51.9)"><use href="#bsb-knobPointer"/></g></g>
+    <g class="knob" data-param="reverbFeedback2" transform="translate(150.2 51.2)"><use href="#bsb-knobBody"/><g class="knob-pointer" transform="rotate(-81.0)"><use href="#bsb-knobPointer"/></g></g>
+    <g class="knob" data-param="oscMix" transform="translate(130.0 90.0)"><use href="#bsb-knobBodyBlue"/><g class="knob-pointer" transform="rotate(0.0)"><use href="#bsb-knobPointerBlue"/></g></g>
+    <g class="knob" data-param="osc1Vol" transform="translate(40.0 150.0)"><use href="#bsb-knobBodyFrame"/><g class="knob-pointer" transform="rotate(90.0)"><use href="#bsb-knobPointerFrame"/></g></g>
+    <g class="knob" data-param="osc1Pan" transform="translate(40.0 180.0)"><use href="#bsb-knobBodyFrame"/><g class="knob-pointer" transform="rotate(0.0)"><use href="#bsb-knobPointerFrame"/></g></g>
+    <g class="knob" data-param="osc1Detune" transform="translate(40.0 210.0)"><use href="#bsb-knobBodyFrame"/><g class="knob-pointer" transform="rotate(0.0)"><use href="#bsb-knobPointerFrame"/></g></g>
+    <g class="knob" data-param="osc2Vol" transform="translate(220.0 150.0)"><use href="#bsb-knobBodyFrame"/><g class="knob-pointer" transform="rotate(90.0)"><use href="#bsb-knobPointerFrame"/></g></g>
+    <g class="knob" data-param="osc2Pan" transform="translate(220.0 180.0)"><use href="#bsb-knobBodyFrame"/><g class="knob-pointer" transform="rotate(0.0)"><use href="#bsb-knobPointerFrame"/></g></g>
+    <g class="knob" data-param="osc2Detune" transform="translate(220.0 210.0)"><use href="#bsb-knobBodyFrame"/><g class="knob-pointer" transform="rotate(0.0)"><use href="#bsb-knobPointerFrame"/></g></g>
+    <g class="knob" data-param="lfo1Amp" transform="translate(80.7 281.6)"><use href="#bsb-knobBodyFrame"/><g class="knob-pointer" transform="rotate(-135.0)"><use href="#bsb-knobPointerFrame"/></g></g>
+    <g class="knob" data-param="lfo1Time" transform="translate(57.3 274.4)"><use href="#bsb-knobBodyFrame"/><g class="knob-pointer" transform="rotate(-7.1)"><use href="#bsb-knobPointerFrame"/></g></g>
+    <g class="knob" data-param="lfo2Amp" transform="translate(142.2 285.0)"><use href="#bsb-knobBodyFrame"/><g class="knob-pointer" transform="rotate(-135.0)"><use href="#bsb-knobPointerFrame"/></g></g>
+    <g class="knob" data-param="lfo2Time" transform="translate(117.8 285.0)"><use href="#bsb-knobBodyFrame"/><g class="knob-pointer" transform="rotate(-7.1)"><use href="#bsb-knobPointerFrame"/></g></g>
+    <g class="knob" data-param="lfo3Amp" transform="translate(202.7 274.4)"><use href="#bsb-knobBodyFrame"/><g class="knob-pointer" transform="rotate(-135.0)"><use href="#bsb-knobPointerFrame"/></g></g>
+    <g class="knob" data-param="lfo3Time" transform="translate(179.3 281.6)"><use href="#bsb-knobBodyFrame"/><g class="knob-pointer" transform="rotate(-7.1)"><use href="#bsb-knobPointerFrame"/></g></g>
   </g>
 </svg>

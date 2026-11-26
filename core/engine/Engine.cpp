@@ -405,7 +405,7 @@ void Engine::controlTick() {
         bus.pan = panGains(value(p.pan));
 
         // Octave and detune retune the playing voices too (a pitch change; the read position carries on).
-        const double ratio = pitchRatio(std::clamp(discrete(p.oct), -2, 2), value(p.detune));
+        const double ratio = pitchRatio(std::clamp(discrete(p.oct), -4, 2), value(p.detune));
         if (ratio != pitchRatio_[osc]) {
             pitchRatio_[osc] = ratio;
             for (Voice& voice : voices_) {

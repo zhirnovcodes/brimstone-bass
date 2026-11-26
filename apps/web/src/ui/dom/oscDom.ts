@@ -74,7 +74,7 @@ export class OscDomView implements OscView {
         this.sustain = slider('Sustain', 17, 74, 'sustain', this.sustainChanged)
         this.release = slider('Release', 84, 74, 'release', this.releaseChanged)
 
-        // OCT.: < field >, -2 .. +2 (stops at the ends)
+        // OCT.: < field >, -4 .. +2 (stops at the ends)
         const octDown = new PixelButton(doc, { x: 29, y: 86, w: 14, h: 14 }, '<', `Osc ${osc} octave down`)
         this.octave = new PixelField(doc, { x: 46, y: 87, w: 18, h: 14 }, 0, 12, true)
         const octUp = new PixelButton(doc, { x: 65, y: 86, w: 14, h: 14 }, '>', `Osc ${osc} octave up`)
