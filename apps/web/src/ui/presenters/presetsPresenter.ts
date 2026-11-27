@@ -4,9 +4,6 @@ import type { MainUiModel } from '../models/mainUiModel'
 import type { PresetBridge } from '../skin'
 import type { PresetsView } from '../views/presetsView'
 
-/** Shown when the sound did not come from a preset. */
-export const NO_PRESET_NAME = 'UNTITLED'
-
 /**
  * Connects the PRESETS screen to the presets. The list reloads each time the screen opens and when the folder
  * changes; a row click selects, OPEN (or a double click) loads the selected preset. SAVE / LOAD use the user's
@@ -24,12 +21,10 @@ export class PresetsPresenter {
         private readonly ui: MainUiModel,
         private readonly view: PresetsView,
     ) {
-        this.showName(presets.name())
         view.setItems([])
         view.setSelected(-1)
         this.reload()
 
-        this.subs.add(presets.onName((name) => this.showName(name)))
         this.subs.add(presets.onListChanged(() => this.reload()))
         this.subs.add(
             ui.changed.on((change) => {
@@ -99,9 +94,5 @@ export class PresetsPresenter {
 
     private say(text: string): void {
         if (!this.disposed) this.ui.setOutputText(text.toUpperCase())
-    }
-
-    private showName(name: string): void {
-        this.view.setName(name ? name.toUpperCase() : NO_PRESET_NAME)
     }
 }

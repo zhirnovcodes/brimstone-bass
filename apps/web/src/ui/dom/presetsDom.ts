@@ -1,9 +1,10 @@
 import { Emitter } from '../core/event'
 import type { PresetsView } from '../views/presetsView'
-import { div, label, PixelButton, SHADOW } from './widgets'
+import { div, PixelButton, SHADOW } from './widgets'
 
 /** PRESETS page. Positions: Figma "Frame 9" (the screen at 48, 21 there). */
-export const PRESET_ROWS = { x: 4, firstTop: 46, step: 13, rows: 3, w: 118 } as const
+// Just the list between the caption and the buttons: 4 rows, beside the scroll line (32 .. 83).
+export const PRESET_ROWS = { x: 4, firstTop: 33, step: 13, rows: 4, w: 118 } as const
 const SCROLL = { x: 127, y: 32, h: 51 } as const // the scroll line (2 px, #F2DFE7)
 const THUMB = { x: 126, top: 34, h: 11 } as const
 
@@ -14,7 +15,6 @@ export class PresetsDomView implements PresetsView {
     readonly saveClicked = new Emitter<void>()
     readonly loadClicked = new Emitter<void>()
 
-    private readonly name: HTMLDivElement
     private readonly rows: HTMLDivElement
     private readonly thumb: HTMLDivElement
     private count = 0
@@ -25,8 +25,6 @@ export class PresetsDomView implements PresetsView {
         private readonly doc: Document,
         page: HTMLElement,
     ) {
-        this.name = label(doc, '', 4, 32, 10)
-        this.name.classList.add('bsb-preset-name')
         this.rows = div(doc, 'bsb-preset-rows', { x: 0, y: 0, w: 124, h: 105 })
         this.rows.setAttribute('role', 'listbox')
         this.rows.setAttribute('aria-label', 'Presets')
@@ -60,7 +58,6 @@ export class PresetsDomView implements PresetsView {
         line.addEventListener('pointerdown', (event) => fromPointer(event.clientY))
 
         page.append(
-            this.name,
             this.rows,
             line,
             this.thumb,
@@ -68,10 +65,6 @@ export class PresetsDomView implements PresetsView {
             button(60, 'SAVE', 'Save the sound to a file on this computer', this.saveClicked),
             button(97, 'LOAD', 'Load a preset file from this computer', this.loadClicked),
         )
-    }
-
-    setName(text: string): void {
-        this.name.textContent = text
     }
 
     setItems(items: string[]): void {
