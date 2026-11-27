@@ -248,8 +248,7 @@
     touch-action: none;
 }
 
-/* PRESETS screen: the current preset's name, three rows of the plugin's presets, OPEN / SAVE / LOAD */
-.bsb-preset-name,
+/* PRESETS screen: the plugin's presets (4 rows), OPEN / SAVE / LOAD */
 .bsb-preset-row {
     overflow: hidden;
     text-overflow: clip;

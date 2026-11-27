@@ -12,7 +12,6 @@ import { EngineDataModel } from './models/engineDataModel'
 import { MainUiModel } from './models/mainUiModel'
 import { buildState, readState } from '../state'
 import type { PresetBridge, SkinBridge } from './skin'
-import { NO_PRESET_NAME } from './presenters/presetsPresenter'
 
 /** In-memory bridge that echoes every change, like the plugin's. */
 function fakeBridge() {
@@ -448,12 +447,12 @@ describe('presets screen', () => {
         expect(ui.getCurrentScreen()).toBe(Screen.Presets)
     })
 
-    it('lists the folder, opens the selected preset, shows the current name', async () => {
+    it('lists the folder and opens the selected preset', async () => {
         const { bridge, calls, presets, folder, listChanged } = fakeBridge()
         const views = fakeViews()
         const app = mount(bridge, views)
         const view = views.presets
-        expect(view.state.Name).toBe(NO_PRESET_NAME)
+        expect(view.state.Name).toBeUndefined() // no name line on the screen
         await settle()
         expect(view.state.Items).toEqual(['BASS 1', 'GROWL', 'SUB DROP'])
         expect(view.state.Selected).toBe(-1)
@@ -467,7 +466,7 @@ describe('presets screen', () => {
         view.openClicked.emit(undefined)
         await settle()
         expect(calls).toContain('open Growl')
-        expect(view.state.Name).toBe('GROWL')
+        expect(presets.current).toBe('Growl')
         expect(app.ui.getOutputText()).toBe('OPENED GROWL')
 
         // The dev panel saved a new one: the list reloads and keeps the selection.
