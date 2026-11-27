@@ -2,7 +2,7 @@
 
 // Brimstone Bass engine: the only class the hosts call.
 //
-// note on -> Voice (x8): per oscillator SamplePlayer (note x octave x detune; attack, loop, tail by the note's
+// note on -> Voice (x8): per oscillator SamplePlayer (note x octave + detune Hz; attack, loop, tail by the note's
 //            times) -> ADSR x velocity
 //         -> sum per oscillator -> OscBus: 120 Hz split; low mono and dry; high -> Unison -> Chain[order] -> pan;
 //            low + high -> x vol -> gate
@@ -112,7 +112,7 @@ private:
         AdsrEnv env[kOscs];
         SamplePlayer player[kOscs];
         NotePlayhead playhead[kOscs]; // per oscillator: each has its own release length
-        double noteRatio[kOscs] = {1.0, 1.0}; // the note against the sample's root note
+        int rootNote[kOscs] = {60, 60}; // the root note of the sample each oscillator plays
 
         bool active() const { return !env[0].idle() || !env[1].idle() || pendingNote >= 0; }
         bool releasing() const { return !held && !sustained; }
@@ -176,7 +176,8 @@ private:
     float decay_[kOscs] = {};
     float sustain_[kOscs] = {};
     float release_[kOscs] = {};
-    double pitchRatio_[kOscs] = {1.0, 1.0}; // octave x detune
+    int octave_[kOscs] = {0, 0};
+    float detuneHz_[kOscs] = {0.0f, 0.0f};
     MixGains mix_{};
 
     Event events_[kMaxEvents] = {};

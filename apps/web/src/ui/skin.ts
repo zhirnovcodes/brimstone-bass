@@ -9,6 +9,7 @@ import { LfoDomView } from './dom/lfoDom'
 import { MainDomView } from './dom/mainDom'
 import { MixDomView } from './dom/mixDom'
 import { OscDomView } from './dom/oscDom'
+import { PresetsDomView } from './dom/presetsDom'
 import { Screen } from './data/uiData'
 
 // The skin talks only to this bridge. The IvanDAW adapter implements it with direct calls; the JUCE editor
@@ -26,6 +27,25 @@ export interface SkinBridge {
     saveState(): StateData
     /** Loads a saved sound: held notes release, every value and both effects orders change (and echo back). */
     loadState(data: unknown): void
+    /** Presets: the plugin's own (its presets folder) and .brimstone files on the user's computer. */
+    presets: PresetBridge
+}
+
+/** Presets for the PRESETS screen. A preset is the whole sound: every parameter and both effects orders (presets.ts). */
+export interface PresetBridge {
+    /** Names of the presets in the plugin's presets folder, sorted. */
+    list(): Promise<string[]>
+    /** Loads one of them: held notes release, every value and both effects orders change. */
+    open(name: string): Promise<void>
+    /** The folder's list changed (the localhost preset panel saved or deleted one). */
+    onListChanged(listener: () => void): () => void
+    /** Name of the sound now: the preset it was opened from or saved as. '' = none. */
+    name(): string
+    onName(listener: (name: string) => void): () => void
+    /** Saves the sound as a .brimstone file on the user's computer. Resolves to the name it got, null = cancelled. */
+    saveFile(): Promise<string | null>
+    /** Asks for a .brimstone file on the user's computer and loads it. Resolves to its name, null = cancelled. */
+    loadFile(): Promise<string | null>
 }
 
 /** The device at Figma size (260 x 306). `scale` would scale it as a whole; 1 = as designed. */
@@ -64,11 +84,12 @@ export function mountSkin(container: HTMLElement, bridge: SkinBridge): Skin {
     ] as const
     const mix = new MixDomView(doc, main.pages[Screen.Mix], events)
     const brimstone = new BrimstoneDomView(doc, main.pages[Screen.Brimstone])
+    const presets = new PresetsDomView(doc, main.pages[Screen.Presets])
     device.append(main.el)
     root.append(device)
     container.append(root)
 
-    const app = createUi(bridge, { events, main, frame, brimstone, osc: [...osc], lfo: [...lfo], mix })
+    const app = createUi(bridge, { events, main, frame, brimstone, osc: [...osc], lfo: [...lfo], mix, presets })
 
     return {
         root,

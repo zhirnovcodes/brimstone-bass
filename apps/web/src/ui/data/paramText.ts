@@ -20,7 +20,7 @@ export type ValueFormat =
     | 'deg 360' // "360"
     | 'int' // "2"
     | 'int+-' // octave: "+2", "-1", "0"
-    | 'dt+-' // detune in cents: "-24", "+5", "0"
+    | 'dt+-' // detune in Hz: "-1000 HZ", "+5 HZ", "0 HZ"
     | 'EFF' // effect button: "FIL. REPLACE"
 
 export interface ParamText {
@@ -92,7 +92,7 @@ export const PARAM_TEXT: Record<string, ParamText> = {
 }
 
 /** Enum lookup tables ("enum string"). */
-export const LFO_TYPE_TEXT = ['TRI', 'SQUARE', 'SINE', 'RAND']
+export const LFO_TYPE_TEXT = ['TRI', 'SQUARE', 'SINE', 'RAND', 'SAW SOFT', 'SAW', 'SAW INV', 'SOFT INV']
 export const MIX_TYPE_TEXT = ['LINEAR', 'EQ. POW.', 'BOTH']
 /** "EFF": the effect whose button is pressed (effect index 0 delay, 1 reverb, 2 filter). */
 export const FX_REPLACE_TEXT = ['Del. Replace', 'Rev. Replace', 'Fil. Replace']
@@ -144,8 +144,9 @@ export function formatParamValue(id: string, data: EngineData): string {
         case 'int':
             return String(Math.round(v))
         case 'int+-':
-        case 'dt+-':
             return signed(v)
+        case 'dt+-':
+            return `${signed(v)} Hz`
         case 'enum string':
             if (/^lfo\dType$/.test(id)) return LFO_TYPE_TEXT[v] ?? ''
             if (/^lfo\dMap$/.test(id)) return lfoTargetShort(v)

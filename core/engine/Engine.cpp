@@ -215,8 +215,8 @@ void Engine::startVoice(Voice& voice, int note, float velocity) {
 void Engine::startPlayer(Voice& voice, int osc) {
     voice.playhead[osc].noteStart = voice.time;
     voice.player[osc].reset();
-    voice.noteRatio[osc] = std::exp2((voice.note - sampleFor(osc).rootNote) / 12.0);
-    voice.player[osc].setPitchRatio(voice.noteRatio[osc] * pitchRatio_[osc]);
+    voice.rootNote[osc] = sampleFor(osc).rootNote;
+    voice.player[osc].setPitchRatio(pitchRatio(voice.note, voice.rootNote[osc], octave_[osc], detuneHz_[osc]));
 }
 
 AdsrEnv::Times Engine::times(int osc) const {
@@ -351,7 +351,7 @@ void Engine::controlTick() {
     for (int k = 0; k < kLfos; ++k) {
         const LfoParams& p = kLfoParams[k];
         LfoInput in;
-        in.shape = static_cast<LfoShape>(std::clamp(discrete(p.type), 0, 3));
+        in.shape = static_cast<LfoShape>(std::clamp(discrete(p.type), 0, 7));
         in.sync = discrete(p.sync) != 0;
         in.retrig = discrete(p.retrig) != 0;
         in.time = value(p.time);
@@ -405,11 +405,13 @@ void Engine::controlTick() {
         bus.pan = panGains(value(p.pan));
 
         // Octave and detune retune the playing voices too (a pitch change; the read position carries on).
-        const double ratio = pitchRatio(std::clamp(discrete(p.oct), -4, 2), value(p.detune));
-        if (ratio != pitchRatio_[osc]) {
-            pitchRatio_[osc] = ratio;
+        const int octave = std::clamp(discrete(p.oct), -4, 2);
+        const float detuneHz = value(p.detune);
+        if (octave != octave_[osc] || detuneHz != detuneHz_[osc]) {
+            octave_[osc] = octave;
+            detuneHz_[osc] = detuneHz;
             for (Voice& voice : voices_) {
-                voice.player[osc].setPitchRatio(voice.noteRatio[osc] * ratio);
+                voice.player[osc].setPitchRatio(pitchRatio(voice.note, voice.rootNote[osc], octave, detuneHz));
             }
         }
     }

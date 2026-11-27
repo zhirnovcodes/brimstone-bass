@@ -30,6 +30,8 @@ private:
     juce::var snapshot();
     void setParam(const juce::String& id, double normalized, const juce::String& gesture);
     void endGestures();
+    void savePresetFile(const juce::String& name, const juce::String& text, juce::WebBrowserComponent::NativeFunctionCompletion completion);
+    void loadPresetFile(juce::WebBrowserComponent::NativeFunctionCompletion completion);
 
     Processor& processor_;
     std::unique_ptr<juce::WebBrowserComponent> browser_;
@@ -38,6 +40,8 @@ private:
     std::array<float, param::count> shown_{};   // the normalized value the page shows
     std::array<bool, param::count> gesture_{}; // a drag from the page is open
     std::array<FxOrder, 2> shownOrder_{kDefaultFxOrder, kDefaultFxOrder};
+    juce::String shownName_;                     // the preset name the page shows
+    std::unique_ptr<juce::FileChooser> chooser_; // SAVE / LOAD on the PRESETS screen, open while its dialog is
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Editor)
 };

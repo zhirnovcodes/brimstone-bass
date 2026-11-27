@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import { DIVISION_LABELS, divisionLabel, formatValue } from './display'
-import { isFxOrder, LFO_TARGETS, PARAMS, param, toNormalized, toPlain } from './params'
+import { INDEX, isFxOrder, LFO_TARGETS, PARAMS, param, toNormalized, toPlain } from './params'
+import { cleanPresetName, parsePreset, presetNameOf, presetText, sortPresetNames } from './presets'
 import { SAMPLES } from './samples'
+import { buildState, readState } from './state'
 
 // params.json is the one parameter list. The C++ side reads it through a header CMake writes from it.
 
@@ -137,10 +139,36 @@ describe('display', () => {
         expect(formatValue(param('lfo1Offset'), 0.5, none)).toBe('180°')
         expect(formatValue(param('osc1Pan'), -0.5, none)).toBe('50L')
         expect(formatValue(param('osc1Pan'), 0, none)).toBe('C')
-        expect(formatValue(param('osc1Detune'), -24, none)).toBe('-24 ct')
-        expect(formatValue(param('osc2Detune'), 0, none)).toBe('0 ct')
+        expect(formatValue(param('osc1Detune'), -1000, none)).toBe('-1000 Hz')
+        expect(formatValue(param('osc2Detune'), 0, none)).toBe('0 Hz')
         expect(formatValue(param('osc2Oct'), 2, none)).toBe('+2')
         expect(formatValue(param('unisonVoices'), 0, none)).toBe('Off')
         expect(formatValue(param('mixType'), 1, none)).toBe('Equal-power')
+    })
+})
+
+describe('presets', () => {
+    it('names: file-safe, 16 characters', () => {
+        expect(cleanPresetName('  Sub  drop!/\:*  ')).toBe('Sub drop')
+        expect(cleanPresetName('ABCDEFGHIJKLMNOPQRST')).toBe('ABCDEFGHIJKLMNOP')
+        expect(cleanPresetName('???')).toBe('')
+        expect(presetNameOf('C:\\Users\\me\\Bass 1.brimstone')).toBe('Bass 1')
+        expect(presetNameOf('../../../presets/Growl.BRIMSTONE')).toBe('Growl')
+        expect(sortPresetNames(['b', 'A 10', 'A 2', 'a 2', 3, ''])).toEqual(['A 2', 'A 10', 'b'])
+    })
+
+    it('a preset file is the state (every param + both effects orders) with its name; the file name wins', () => {
+        const values = PARAMS.map((p) => p.default)
+        values[INDEX.get('osc1Detune')!] = -250
+        const state = buildState(values, [[0, 1, 2], [1, 2, 0]], 'Old')
+        const text = presetText(state, 'Growl')
+        const back = readState(parsePreset(text, 'Renamed'))
+        expect(back.name).toBe('Renamed')
+        expect(back.values).toEqual(values)
+        expect(back.fxOrder).toEqual([[0, 1, 2], [1, 2, 0]])
+        expect(() => parsePreset('{"v":1}', 'x')).toThrow()
+        expect(() => parsePreset('nope', 'x')).toThrow()
+        // Older states have no name.
+        expect(readState({ v: 1, params: {} }).name).toBe('')
     })
 })

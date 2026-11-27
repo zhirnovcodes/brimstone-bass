@@ -43,6 +43,7 @@ juce::String writeState(const StateData& state) {
     }
     auto root = std::make_unique<juce::DynamicObject>();
     root->setProperty("v", kStateVersion);
+    root->setProperty("name", state.name);
     root->setProperty("params", juce::var(params.release()));
     root->setProperty("fxOrder", orders);
     // Compact, like JSON.stringify in the web build.
@@ -52,6 +53,10 @@ juce::String writeState(const StateData& state) {
 StateData readState(const juce::String& json) {
     StateData state = defaultState();
     const juce::var root = juce::JSON::parse(json);
+
+    if (root["name"].isString()) {
+        state.name = root["name"].toString();
+    }
 
     if (const auto* params = root["params"].getDynamicObject()) {
         for (int i = 0; i < param::count; ++i) {

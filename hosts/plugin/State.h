@@ -1,7 +1,8 @@
 #pragma once
 
 // The saved sound: the same JSON as the IvanDAW web build's getState().data (apps/web/src/state.ts).
-//   { "v": 1, "params": { "<params.json id>": <plain value>, ... }, "fxOrder": [[2,0,1],[2,0,1]] }
+//   { "v": 1, "name": "<preset name>", "params": { "<params.json id>": <plain value>, ... }, "fxOrder": [[2,0,1],[2,0,1]] }
+// A .brimstone preset file is the same JSON (apps/web/src/presets.ts). Older states have no name.
 // A project saved in one host loads in the other. Changing it needs a version bump and a reader for the old one.
 
 #include "ParamsJson.h"
@@ -20,6 +21,7 @@ inline constexpr FxOrder kDefaultFxOrder = {2, 0, 1}; // filter -> delay -> reve
 struct StateData {
     std::array<double, param::count> values{}; // plain values, index = params.json index
     std::array<FxOrder, 2> fxOrder{kDefaultFxOrder, kDefaultFxOrder};
+    juce::String name; // the preset the sound came from; empty = none
 };
 
 StateData defaultState();

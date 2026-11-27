@@ -6,6 +6,7 @@ import { LfoPresenter } from './presenters/lfoPresenter'
 import { MainPresenter } from './presenters/mainPresenter'
 import { MixPresenter } from './presenters/mixPresenter'
 import { OscPresenter } from './presenters/oscPresenter'
+import { PresetsPresenter } from './presenters/presetsPresenter'
 import type { SkinBridge } from './skin'
 import type { BrimstoneView } from './views/brimstoneView'
 import type { EventView } from './views/eventView'
@@ -14,6 +15,7 @@ import type { LfoView } from './views/lfoView'
 import type { MainView } from './views/mainView'
 import type { MixView } from './views/mixView'
 import type { OscView } from './views/oscView'
+import type { PresetsView } from './views/presetsView'
 
 export interface Views {
     events: EventView
@@ -23,6 +25,7 @@ export interface Views {
     osc: [OscView, OscView]
     lfo: [LfoView, LfoView, LfoView]
     mix: MixView
+    presets: PresetsView
 }
 
 export interface UiApp {
@@ -45,6 +48,7 @@ export function createUi(bridge: SkinBridge, views: Views): UiApp {
         new LfoPresenter(2, engine, views.lfo[1]),
         new LfoPresenter(3, engine, views.lfo[2]),
         new MixPresenter(engine, views.mix),
+        new PresetsPresenter(bridge.presets, ui, views.presets),
     ]
     return {
         engine,

@@ -3,7 +3,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { defineConfig, type Plugin } from 'vite'
 import { manifest } from './src/manifest.ts'
-import { sampleFiles, samplesDir, wasmCommand, wasmPath } from './vite.assets.ts'
+import { presetFiles, presetIndex, presetsDir, sampleFiles, samplesDir, wasmCommand, wasmPath } from './vite.assets.ts'
 import { processorScript } from './vite.processor.ts'
 
 // The IvanDAW build (build/web/dist-daw/): one folder that works from any URL.
@@ -12,6 +12,7 @@ import { processorScript } from './vite.processor.ts'
 // brimstone-bass.wasm
 // manifest.json     the manifest as data
 // samples/          the built-in samples
+// presets/          the presets (*.brimstone) and index.json, their names
 
 function dawFiles(): Plugin {
     return {
@@ -39,6 +40,10 @@ function dawFiles(): Plugin {
                 }
                 this.emitFile({ type: 'asset', fileName: 'samples/' + file, source: fs.readFileSync(source) })
             }
+            for (const file of presetFiles()) {
+                this.emitFile({ type: 'asset', fileName: 'presets/' + file, source: fs.readFileSync(path.join(presetsDir, file)) })
+            }
+            this.emitFile({ type: 'asset', fileName: 'presets/index.json', source: presetIndex() })
         },
     }
 }

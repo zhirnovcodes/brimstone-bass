@@ -221,7 +221,8 @@ if(NOT EMSCRIPTEN AND BB_PLUGIN)
     file(GLOB_RECURSE bb_ui_sources CONFIGURE_DEPENDS
         ${CMAKE_CURRENT_SOURCE_DIR}/apps/web/src/*.ts
         ${CMAKE_CURRENT_SOURCE_DIR}/apps/web/src/*.css
-        ${CMAKE_CURRENT_SOURCE_DIR}/apps/web/src/ui/assets/*)
+        ${CMAKE_CURRENT_SOURCE_DIR}/apps/web/src/ui/assets/*
+        ${CMAKE_CURRENT_SOURCE_DIR}/presets/*.brimstone) # the plugin's presets are built into skin.js
     set(bb_ui_dir ${CMAKE_CURRENT_BINARY_DIR}/ui)
     add_custom_command(
         OUTPUT ${bb_ui_dir}/skin.js

@@ -247,3 +247,23 @@
     cursor: grab;
     touch-action: none;
 }
+
+/* PRESETS screen: the current preset's name, three rows of the plugin's presets, OPEN / SAVE / LOAD */
+.bsb-preset-name,
+.bsb-preset-row {
+    overflow: hidden;
+    text-overflow: clip;
+}
+.bsb-preset-row {
+    cursor: pointer;
+}
+.bsb-preset-row:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+.bsb-preset-row[aria-selected='true'] {
+    background: var(--bsb-face);
+}
+.bsb-preset-scroll {
+    background: #f2dfe7;
+    cursor: pointer;
+}

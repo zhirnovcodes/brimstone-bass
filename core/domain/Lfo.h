@@ -8,7 +8,14 @@
 
 namespace bb {
 
-enum class LfoShape : std::uint8_t { Tri = 0, Square = 1, Sine = 2, Rand = 3 };
+enum class LfoShape : std::uint8_t { Tri = 0, Square = 1, Sine = 2, Rand = 3, SawSoft = 4, Saw = 5, SawInv = 6, SawSoftInv = 7 };
+
+// Saw: 1 falling to 0 each cycle. Saw inv: 0 rising to 1.
+
+// Saw soft: a rising saw whose ramp is a tanh curve, steep at the start, easing into the top, then the drop.
+// Saw soft inv: the same upside down: 1 falling fast, easing into 0, then the jump back to 1.
+// Higher = more curved.
+inline constexpr double kSawSoftCurve = 3.0;
 
 struct LfoInput {
     LfoShape shape = LfoShape::Sine;

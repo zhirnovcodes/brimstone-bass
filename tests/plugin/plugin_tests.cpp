@@ -103,18 +103,23 @@ void stateFormat() {
     // Defaults, written and read back.
     const StateData defaults = defaultState();
     const juce::String json = writeState(defaults);
-    CHECK(json.startsWith("{\"v\":1,\"params\":{\"filterDw1\":"));
+    CHECK(json.startsWith("{\"v\":1,\"name\":\"\",\"params\":{\"filterDw1\":"));
     CHECK(json.contains("\"fxOrder\":[[2,0,1],[2,0,1]]"));
     const StateData back = readState(json);
     for (int i = 0; i < param::count; ++i) {
         CHECK_NEAR(back.values[static_cast<size_t>(i)], defaults.values[static_cast<size_t>(i)], 1e-12);
     }
     CHECK(back.fxOrder[0] == kDefaultFxOrder && back.fxOrder[1] == kDefaultFxOrder);
+    CHECK(back.name.isEmpty());
 
-    // What the web build saves (JSON.stringify of buildState): read as is.
+    // What the web build saves (JSON.stringify of buildState, also a .brimstone preset): read as is.
     const StateData web = readState(
-        R"({"v":1,"params":{"filterDw1":0.25,"osc2Sample":5,"unisonVoices":3,"lfo1Sync":0,"osc1Vol":1.2},)"
+        R"({"v":1,"name":"Sub drop","params":{"filterDw1":0.25,"osc2Sample":5,"unisonVoices":3,"lfo1Sync":0,"osc1Vol":1.2},)"
         R"("fxOrder":[[0,1,2],[1,2,0]]})");
+    CHECK(web.name == "Sub drop");
+    StateData named = defaultState();
+    named.name = "Growl";
+    CHECK(readState(writeState(named)).name == "Growl");
     CHECK_NEAR(web.values[param::filterDw1], 0.25, 1e-12);
     CHECK_NEAR(web.values[param::osc2Sample], 5, 0);
     CHECK_NEAR(web.values[param::unisonVoices], 3, 0);
@@ -144,6 +149,7 @@ void processorState() {
     s.values[param::lfo2Retrig] = 1;
     s.values[indexOf("osc1Pan")] = -0.5;
     s.fxOrder = {FxOrder{1, 0, 2}, FxOrder{0, 2, 1}};
+    s.name = "Growl";
     a.applyState(s);
 
     juce::MemoryBlock saved;
@@ -156,6 +162,7 @@ void processorState() {
     }
     CHECK((got.fxOrder[0] == FxOrder{1, 0, 2}));
     CHECK((got.fxOrder[1] == FxOrder{0, 2, 1}));
+    CHECK(got.name == "Growl");
 
     // The saved bytes are the web JSON, nothing around it.
     const juce::String text = juce::String::fromUTF8(static_cast<const char*>(saved.getData()), static_cast<int>(saved.getSize()));

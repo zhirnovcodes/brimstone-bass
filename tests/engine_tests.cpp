@@ -154,24 +154,24 @@ void pitch() {
     }
 }
 
-// Octave offset and detune: before the note, and while it plays (the voice retunes).
+// Octave offset and detune (Hz added to the note's frequency): before the note, and while it plays (the voice retunes).
 void octaveAndDetune() {
     struct Case {
         int oct;
-        double cents;
+        double detuneHz;
     };
-    for (const Case c : {Case{-1, 0.0}, Case{2, 0.0}, Case{0, 24.0}, Case{1, -24.0}}) {
+    for (const Case c : {Case{-1, 0.0}, Case{2, 0.0}, Case{0, 100.0}, Case{1, -200.0}, Case{-1, 30.0}}) {
         auto e = makeEngine();
         dry(*e);
         e->setParam(param::osc1Oct, c.oct);
-        e->setParam(param::osc1Detune, c.cents);
+        e->setParam(param::osc1Detune, c.detuneHz);
         const Render out = render(*e, static_cast<int>(kRate * 0.4), 512, [&](Engine& en, int s, int n) {
             at(0, s, n, [&](int f) { en.midi(f, 0x90, 60, 127); });
         });
         const double hz = preciseHz(out.l, 9600, 19000); // the first loop pass, past the detune glide
-        const double expected = 261.6256 * std::pow(2.0, c.oct + c.cents / 1200.0);
-        NOTE("oct %+d detune %+.0f ct: %.2f Hz (expected %.2f)\n", c.oct, c.cents, hz, expected);
-        CHECK(std::fabs(hz - expected) < expected * 0.001); // 1.7 cents; 24 cents is 1.4 %
+        const double expected = 261.6256 * std::pow(2.0, c.oct) + c.detuneHz;
+        NOTE("oct %+d detune %+.0f Hz: %.2f Hz (expected %.2f)\n", c.oct, c.detuneHz, hz, expected);
+        CHECK(std::fabs(hz - expected) < expected * 0.001); // 1.7 cents
     }
     // While the note plays: an octave up halfway through.
     auto e = makeEngine();

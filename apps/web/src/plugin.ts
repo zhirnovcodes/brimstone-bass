@@ -13,6 +13,7 @@ import type {
 import { formatValue } from './display'
 import { ID, manifest, VERSION } from './manifest'
 import { clampPlain, DEFAULT_FX_ORDER, type FxOrder, INDEX, isFxOrder, PARAMS, toNormalized, toPlain } from './params'
+import { browserPresets, cleanPresetName } from './presets'
 import { SAMPLES } from './samples'
 import { buildState, readState, type StateData } from './state'
 import { mountSkin, type Skin, type SkinBridge } from './ui/skin'
@@ -29,6 +30,16 @@ import skinCss from './ui/skin.css?inline'
 export interface Meter {
     peak: number
     voices: number
+}
+
+/** Not part of Plugin API v2: what the localhost dev page's preset panel uses. */
+export interface DevPresets {
+    /** The presets folder changed: the PRESETS screen reloads its list. */
+    changed(): void
+    /** The sound was saved as this preset: it becomes the current preset name. */
+    setName(name: string): void
+    name(): string
+    onName(listener: (name: string) => void): () => void
 }
 
 // One style element per document, shared by every instance.
@@ -232,15 +243,53 @@ const factory: PluginFactory = {
             }
         }
 
-        // Save / load: the same code for the host's getState / setState and the UI's EngineDataModel.
-        const saveState = (): StateData => buildState(values, fxOrder)
+        // The preset the sound came from ('' = none). Saved with the state.
+        let presetName = ''
+        const nameListeners = new Set<(name: string) => void>()
+        const setPresetName = (name: string) => {
+            const clean = cleanPresetName(name)
+            if (clean === presetName) return
+            presetName = clean
+            for (const listener of nameListeners) listener(clean)
+        }
+
+        // Save / load: the same code for the host's getState / setState, the UI's EngineDataModel and presets.
+        const saveState = (): StateData => buildState(values, fxOrder, presetName)
         const loadState = (data: unknown) => {
             const saved = readState(data)
             // Held notes release first, then the saved sound loads.
             post({ type: 'allOff', time: 0 })
             saved.values.forEach((v, index) => apply(index, v, 'internal'))
             saved.fxOrder.forEach((order, osc) => applyFxOrder(osc as 0 | 1, order))
+            setPresetName(saved.name)
         }
+
+        // The plugin's presets: presets/ in the plugin folder (presets/index.json lists them).
+        const presets = browserPresets({
+            doc: container?.ownerDocument ?? document,
+            fetchText: async (path) => {
+                try {
+                    const response = await fetch(host.assetUrl('presets/' + path), { cache: 'no-store' })
+                    return response.ok ? await response.text() : null
+                } catch {
+                    return null
+                }
+            },
+            saveState,
+            loadState: (data) => {
+                loadState(data)
+                host.markDirty()
+            },
+            name: () => presetName,
+            setName: (name) => {
+                setPresetName(name)
+                host.markDirty()
+            },
+            onName: (listener) => {
+                nameListeners.add(listener)
+                return () => nameListeners.delete(listener)
+            },
+        })
 
         const bridge: SkinBridge = {
             value: (id) => {
@@ -273,6 +322,7 @@ const factory: PluginFactory = {
                 loadState(data)
                 host.markDirty()
             },
+            presets,
         }
 
         const infos: ParameterInfo[] = PARAMS.map((p) => {
@@ -302,7 +352,7 @@ const factory: PluginFactory = {
             ['out', { info: portInfo('out', 'audio'), node, index: 0 }],
         ])
 
-        const instance: PluginInstance & { meter(listener: (meter: Meter) => void): () => void } = {
+        const instance: PluginInstance & { meter(listener: (meter: Meter) => void): () => void; presets: DevPresets } = {
             ports,
             latency: 0,
             // Longest release (8 s) plus a long reverb; the host keeps the node running this long after the last note.
@@ -339,6 +389,7 @@ const factory: PluginFactory = {
                 uiParamListeners.clear()
                 uiOrderListeners.clear()
                 meterListeners.clear()
+                nameListeners.clear()
                 post({ type: 'dispose' })
                 node.port.onmessage = null
                 node.disconnect()
@@ -347,6 +398,16 @@ const factory: PluginFactory = {
             meter: (listener) => {
                 meterListeners.add(listener)
                 return () => meterListeners.delete(listener)
+            },
+            // Not part of Plugin API v2: the dev page's preset panel.
+            presets: {
+                changed: () => presets.changed(),
+                setName: (name) => {
+                    setPresetName(name)
+                    host.markDirty()
+                },
+                name: () => presetName,
+                onName: (listener) => presets.onName(listener),
             },
         }
         return instance

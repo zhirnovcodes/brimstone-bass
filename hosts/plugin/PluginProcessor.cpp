@@ -287,7 +287,18 @@ StateData Processor::currentState() const {
         state.values[static_cast<size_t>(i)] = plainValue(i);
     }
     state.fxOrder = {fxOrder(0), fxOrder(1)};
+    state.name = presetName();
     return state;
+}
+
+juce::String Processor::presetName() const {
+    const juce::SpinLock::ScopedLockType lock(nameLock_);
+    return presetName_;
+}
+
+void Processor::setPresetName(const juce::String& name) {
+    const juce::SpinLock::ScopedLockType lock(nameLock_);
+    presetName_ = name;
 }
 
 void Processor::applyState(const StateData& state) {
@@ -301,6 +312,7 @@ void Processor::applyState(const StateData& state) {
     for (int osc = 0; osc < 2; ++osc) {
         setFxOrder(osc, state.fxOrder[static_cast<size_t>(osc)]);
     }
+    setPresetName(state.name);
     // A new sound releases the old one's notes.
     allOffPending_.store(true);
 }
