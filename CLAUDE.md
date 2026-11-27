@@ -10,7 +10,7 @@ Effects: zhirnovcodes/ivan-daw-engine-core `v0.1.0` (FetchContent). The ADSR por
 ## The oscillator (what differs from Axolotl)
 
 ```
-note -> detune + octave -> SamplePlayer (attack piece, loop on repeat, tail in the release's last R s)
+note -> octave, + detune Hz -> SamplePlayer (attack piece, loop on repeat, tail in the release's last R s)
      -> ADSR x velocity -> sum of voices -> Crossover 120 Hz
         low (mono)  ---------------------------------------------+-> x vol -> gate
         high -> Unison -> Delay/Reverb/low-pass Filter (user order) -> pan -+
@@ -37,6 +37,7 @@ note -> detune + octave -> SamplePlayer (attack piece, loop on repeat, tail in t
 | `apps/web/src/ui/` | the skin; talks only to `SkinBridge` |
 | `samples/` | built-in samples + `samples.json` (root note; attack, loop, release in seconds) |
 | `params.json` | the only parameter list; CMake writes `ParamsJson.h` from it |
+| `presets/` | the plugin's presets (`<name>.brimstone`: state JSON + name); edited only from the localhost dev page's preset panel |
 | `hosts/plugin/` | JUCE processor, state JSON (same as web), editor (web view), `ui/index.html` |
 | `tests/` | `bb_tests` (core); `plugin/` `bb_plugin_tests` (JUCE host) |
 

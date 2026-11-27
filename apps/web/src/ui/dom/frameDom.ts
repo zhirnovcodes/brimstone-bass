@@ -11,7 +11,7 @@ const DRAG_RANGE = 160
 /** A drag that passes within this of a snap position (about 4 px) stops on it. */
 const SNAP_RANGE = 0.025
 
-/** Knob positions a drag sticks to: detune 0 ct, pan centre, volume 1.0 (the old screen sliders' dots). */
+/** Knob positions a drag sticks to: detune 0 Hz, pan centre, volume 1.0 (the old screen sliders' dots). */
 export const KNOB_SNAPS: Record<string, number[]> = Object.fromEntries(
     [1, 2].flatMap((n) => [
         [`osc${n}Detune`, [toNormalized(param(`osc${n}Detune`), 0)]],

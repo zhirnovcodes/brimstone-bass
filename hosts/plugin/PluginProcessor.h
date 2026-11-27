@@ -56,6 +56,10 @@ public:
     StateData currentState() const;
     void applyState(const StateData& state);
 
+    // The preset the sound came from (saved with the state); empty = none. Any thread but the audio thread.
+    juce::String presetName() const;
+    void setPresetName(const juce::String& name);
+
 private:
     struct Sample {
         juce::AudioBuffer<float> audio;
@@ -91,6 +95,9 @@ private:
     std::atomic<bool> allOffPending_{false};
 
     std::atomic<double> tail_{0.0};
+
+    mutable juce::SpinLock nameLock_;
+    juce::String presetName_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Processor)
 };

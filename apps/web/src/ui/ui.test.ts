@@ -11,7 +11,8 @@ import { NO_FX_BUTTON, Screen } from './data/uiData'
 import { EngineDataModel } from './models/engineDataModel'
 import { MainUiModel } from './models/mainUiModel'
 import { buildState, readState } from '../state'
-import type { SkinBridge } from './skin'
+import type { PresetBridge, SkinBridge } from './skin'
+import { NO_PRESET_NAME } from './presenters/presetsPresenter'
 
 /** In-memory bridge that echoes every change, like the plugin's. */
 function fakeBridge() {
@@ -20,6 +21,33 @@ function fakeBridge() {
     const params = new Emitter<[string, number]>()
     const fx = new Emitter<[0 | 1, FxOrder]>()
     const calls: string[] = []
+    const name = new Emitter<string>()
+    const list = new Emitter<void>()
+    let current = ''
+    const folder = ['Bass 1', 'Growl', 'Sub drop']
+    const presets: PresetBridge & { current: string } = {
+        get current() {
+            return current
+        },
+        set current(n: string) {
+            current = n
+            name.emit(n)
+        },
+        list: async () => [...folder],
+        open: async (n) => {
+            if (!folder.includes(n)) throw new Error('missing')
+            calls.push(`open ${n}`)
+            presets.current = n
+        },
+        onListChanged: (l) => list.on(l),
+        name: () => current,
+        onName: (l) => name.on(l),
+        saveFile: async () => {
+            calls.push('saveFile')
+            return current || 'Preset'
+        },
+        loadFile: async () => null,
+    }
     const bridge: SkinBridge = {
         value: (id) => values.get(id) ?? 0,
         setParam: (id, n, gesture) => {
@@ -42,10 +70,11 @@ function fakeBridge() {
             PARAMS.forEach((p, i) => bridge.setParam(p.id, toNormalized(p, saved.values[i])))
             saved.fxOrder.forEach((order, osc) => bridge.setFxOrder(osc as 0 | 1, order))
         },
+        presets,
     }
     /** As if automation / MIDI moved a parameter. */
     const external = (id: string, plain: number) => bridge.setParam(id, toNormalized(PARAMS[INDEX.get(id)!], plain))
-    return { bridge, calls, external }
+    return { bridge, calls, external, presets, folder, listChanged: () => list.emit() }
 }
 
 type Fake = { state: Record<string, unknown> } & Record<string, Emitter<unknown>>
@@ -76,6 +105,7 @@ function fakeViews() {
         osc: [fakeView(), fakeView()],
         lfo: [fakeView(), fakeView(), fakeView()],
         mix: fakeView(),
+        presets: fakeView(),
     }
 }
 
@@ -145,9 +175,9 @@ describe('output line', () => {
         expect(out('oscMix', 0.5)).toBe('OSC. MIX 0.0')
         expect(out('osc1Pan', -0.5)).toBe('OSC1 PAN -0.5')
         expect(out('osc1Vol', 1.2)).toBe('OSC1 VOLUME 1.2')
-        expect(out('osc2Detune', -24)).toBe('OSC2 DETUNE -24')
-        expect(out('osc1Detune', 5)).toBe('OSC1 DETUNE +5')
-        expect(out('osc1Detune', 0)).toBe('OSC1 DETUNE 0')
+        expect(out('osc2Detune', -1000)).toBe('OSC2 DETUNE -1000 HZ')
+        expect(out('osc1Detune', 5)).toBe('OSC1 DETUNE +5 HZ')
+        expect(out('osc1Detune', 0)).toBe('OSC1 DETUNE 0 HZ')
         expect(out('osc2Oct', 2)).toBe('OCTAVE +2')
         expect(out('osc1Oct', -1)).toBe('OCTAVE -1')
         expect(out('lfo3Amp', 0.5)).toBe('LFO 3 AMP. 0.5')
@@ -222,7 +252,7 @@ describe('MainUiModel', () => {
         const ui = new MainUiModel()
         expect(ui.getCurrentScreen()).toBe(Screen.Brimstone)
         ui.prevScreen()
-        expect(ui.getCurrentScreen()).toBe(Screen.Mix)
+        expect(ui.getCurrentScreen()).toBe(Screen.Presets)
         ui.nextScreen()
         ui.nextScreen()
         expect(ui.getCurrentScreen()).toBe(Screen.Osc1)
@@ -302,7 +332,15 @@ describe('presenters', () => {
         expect(bridge.value('lfo2Map')).toBeCloseTo(3 / 40) // stored as the choice index, not the row
         lfo.rightTypeClicked.emit(undefined)
         lfo.rightTypeClicked.emit(undefined)
-        expect(lfo.state.Type).toBe('TRI') // Sine → Rand → wraps to Tri
+        expect(lfo.state.Type).toBe('SAW SOFT') // Sine → Rand → Saw soft
+        lfo.rightTypeClicked.emit(undefined)
+        expect(lfo.state.Type).toBe('SAW')
+        lfo.rightTypeClicked.emit(undefined)
+        expect(lfo.state.Type).toBe('SAW INV')
+        lfo.rightTypeClicked.emit(undefined)
+        expect(lfo.state.Type).toBe('SOFT INV')
+        lfo.rightTypeClicked.emit(undefined)
+        expect(lfo.state.Type).toBe('TRI') // wraps
     })
 
     it('osc: sample drop-down selects a sample and closes', () => {
@@ -360,7 +398,7 @@ describe('presenters', () => {
         expect(views.lfo[0].state.Sync).toBe(true)
     })
 
-    it('frame: detune, pan and volume knobs stick at 0 ct, centre and 1.0', () => {
+    it('frame: detune, pan and volume knobs stick at 0 Hz, centre and 1.0', () => {
         expect(snapKnob('osc1Detune', 0.51)).toBe(0.5)
         expect(snapKnob('osc2Detune', 0.56)).toBe(0.56)
         expect(snapKnob('osc2Pan', 0.49)).toBe(0.5)
@@ -398,5 +436,71 @@ describe('presenters', () => {
         expect(views.mix.state.Voices).toBe('0')
         for (let i = 0; i < 6; i++) views.mix.voicesRightClicked.emit(undefined)
         expect(views.mix.state.Voices).toBe('4')
+    })
+})
+
+const settle = () => new Promise((resolve) => setTimeout(resolve, 0))
+
+describe('presets screen', () => {
+    it('is the last screen', () => {
+        const ui = new MainUiModel()
+        ui.prevScreen()
+        expect(ui.getCurrentScreen()).toBe(Screen.Presets)
+    })
+
+    it('lists the folder, opens the selected preset, shows the current name', async () => {
+        const { bridge, calls, presets, folder, listChanged } = fakeBridge()
+        const views = fakeViews()
+        const app = mount(bridge, views)
+        const view = views.presets
+        expect(view.state.Name).toBe(NO_PRESET_NAME)
+        await settle()
+        expect(view.state.Items).toEqual(['BASS 1', 'GROWL', 'SUB DROP'])
+        expect(view.state.Selected).toBe(-1)
+
+        view.openClicked.emit(undefined)
+        await settle()
+        expect(app.ui.getOutputText()).toBe('SELECT A PRESET')
+
+        view.itemClicked.emit(1)
+        expect(view.state.Selected).toBe(1)
+        view.openClicked.emit(undefined)
+        await settle()
+        expect(calls).toContain('open Growl')
+        expect(view.state.Name).toBe('GROWL')
+        expect(app.ui.getOutputText()).toBe('OPENED GROWL')
+
+        // The dev panel saved a new one: the list reloads and keeps the selection.
+        folder.unshift('Acid')
+        listChanged()
+        await settle()
+        expect(view.state.Items).toEqual(['ACID', 'BASS 1', 'GROWL', 'SUB DROP'])
+        expect(view.state.Selected).toBe(2)
+
+        view.itemOpened.emit(3)
+        await settle()
+        expect(presets.current).toBe('Sub drop')
+        expect(view.state.Selected).toBe(3)
+
+        view.saveClicked.emit(undefined)
+        await settle()
+        expect(app.ui.getOutputText()).toBe('SAVED SUB DROP')
+
+        // LOAD cancelled: nothing to say.
+        app.ui.setOutputText('')
+        view.loadClicked.emit(undefined)
+        await settle()
+        expect(app.ui.getOutputText()).toBe('')
+        app.dispose()
+    })
+
+    it('selects the current preset when the list arrives', async () => {
+        const { bridge, presets } = fakeBridge()
+        presets.current = 'Growl'
+        const views = fakeViews()
+        const app = mount(bridge, views)
+        await settle()
+        expect(views.presets.state.Selected).toBe(1)
+        app.dispose()
     })
 })

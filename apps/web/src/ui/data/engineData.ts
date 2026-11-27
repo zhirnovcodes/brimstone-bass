@@ -13,7 +13,7 @@ export interface OscFxData {
     delayTime: number // 0..1 (the engine maps it to 1/16t .. 4)
     vol: number // 0..1.2
     pan: number // -1..1
-    detune: number // -24..24 cents
+    detune: number // -1000..1000 Hz
 }
 
 /** Group "Top level": the knobs on the upper frame. */
@@ -36,7 +36,7 @@ export interface LowerLevelData {
 }
 
 export interface LfoMappingData {
-    type: number // 0..3: Tri, Square, Sine, Rand
+    type: number // 0..7: Tri, Square, Sine, Rand, Saw soft, Saw, Saw inv, Saw soft inv
     map: number // index into LFO_TARGETS
     sync: boolean
     retrig: boolean

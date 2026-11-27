@@ -25,7 +25,7 @@ void paramsTable() {
     CHECK(kParams[param::lfo1Map].max == lfoTargets - 1);
     CHECK(kParams[param::lfo2Map].max == lfoTargets - 1);
     CHECK(kParams[param::lfo3Map].max == lfoTargets - 1);
-    CHECK(kParams[param::osc1Detune].min == -24.0 && kParams[param::osc1Detune].max == 24.0);
+    CHECK(kParams[param::osc1Detune].min == -1000.0 && kParams[param::osc1Detune].max == 1000.0);
     CHECK(kParams[param::osc2Oct].min == -4.0 && kParams[param::osc2Oct].max == 2.0);
     CHECK(std::strcmp(kParams[param::unisonValue].id, "unisonValue") == 0);
 }
@@ -39,9 +39,13 @@ void conversions() {
     CHECK_NEAR(lfoBeats(17.0f / 19.0f), 16.0, 1e-12);               // 4 bars
     CHECK_NEAR(lfoBeats(9.0f / 19.0f), 1.0, 1e-12);
     CHECK_NEAR(lfoBeats(static_cast<float>(kParams[param::lfo1Time].def)), 1.0, 1e-12);
-    CHECK_NEAR(pitchRatio(0, 0.0f), 1.0, 1e-12);
-    CHECK_NEAR(pitchRatio(-2, 0.0f), 0.25, 1e-12);
-    CHECK_NEAR(pitchRatio(1, 24.0f), 2.0 * std::exp2(24.0 / 1200.0), 1e-9);
+    CHECK_NEAR(noteHz(69), 440.0, 1e-12);
+    CHECK_NEAR(pitchRatio(60, 60, 0, 0.0f), 1.0, 1e-12);
+    CHECK_NEAR(pitchRatio(60, 60, -2, 0.0f), 0.25, 1e-12);
+    CHECK_NEAR(pitchRatio(72, 60, 0, 0.0f), 2.0, 1e-12);
+    CHECK_NEAR(pitchRatio(69, 69, 1, 100.0f), 980.0 / 440.0, 1e-12);  // 880 Hz + 100 Hz
+    CHECK_NEAR(pitchRatio(69, 57, 0, -220.0f), 1.0, 1e-12);           // 440 - 220 Hz = A3, the root
+    CHECK_NEAR(pitchRatio(36, 36, 0, -1000.0f), 1.0 / noteHz(36), 1e-12); // floored at 1 Hz
     CHECK_NEAR(delaySeconds(1.0f, 120.0), 2.0, 1e-6);
     CHECK_NEAR(delaySeconds(1.0f, 10.0), kMaxDelaySeconds, 1e-6); // clamped to 30 BPM
     CHECK_NEAR(lfoFreeSeconds(0.0f), 0.1, 1e-9);
@@ -105,6 +109,22 @@ void lfo() {
     CHECK_NEAR(Lfo::shape(LfoShape::Tri, 0.75), 0.0, 1e-6);
     CHECK_NEAR(Lfo::shape(LfoShape::Square, 0.1), 1.0, 1e-6);
     CHECK_NEAR(Lfo::shape(LfoShape::Square, 0.6), 0.0, 1e-6);
+    CHECK_NEAR(Lfo::shape(LfoShape::Saw, 0.0), 1.0, 1e-6);
+    CHECK_NEAR(Lfo::shape(LfoShape::Saw, 0.25), 0.75, 1e-6);
+    CHECK_NEAR(Lfo::shape(LfoShape::Saw, 1.0), 1.0, 1e-6); // the next cycle starts again at the top
+    CHECK_NEAR(Lfo::shape(LfoShape::SawInv, 0.0), 0.0, 1e-6);
+    CHECK_NEAR(Lfo::shape(LfoShape::SawInv, 0.25), 0.25, 1e-6);
+    CHECK_NEAR(Lfo::shape(LfoShape::SawInv, 0.999), 0.999, 1e-6);
+    // Saw soft: 0 at the start, past the straight saw's line on the way up (tanh bows it), almost 1 at the end.
+    CHECK_NEAR(Lfo::shape(LfoShape::SawSoft, 0.0), 0.0, 1e-6);
+    CHECK_NEAR(Lfo::shape(LfoShape::SawSoft, 0.25), std::tanh(0.75) / std::tanh(3.0), 1e-6);
+    CHECK(Lfo::shape(LfoShape::SawSoft, 0.25) > 0.6f);
+    CHECK(Lfo::shape(LfoShape::SawSoft, 0.999) > 0.99f);
+    for (double p = 0.0; p < 0.99; p += 0.01) {
+        CHECK(Lfo::shape(LfoShape::SawSoft, p + 0.01) > Lfo::shape(LfoShape::SawSoft, p)); // rises the whole cycle
+        CHECK_NEAR(Lfo::shape(LfoShape::SawSoftInv, p), 1.0 - Lfo::shape(LfoShape::SawSoft, p), 1e-6); // its mirror
+    }
+    CHECK_NEAR(Lfo::shape(LfoShape::SawSoftInv, 0.0), 1.0, 1e-6);
 
     // Free: 1 s period (knob for 1 s), a quarter second = a quarter cycle.
     Lfo f(2);

@@ -76,7 +76,7 @@ export function formatValue(p: ParamDef, v: number, valueOf: (id: string) => num
         return seconds(lerp(0.05, 30, v))
     }
     if (/Detune$/.test(id)) {
-        return `${signed(v)} ct`
+        return `${signed(v)} Hz`
     }
     if (/Oct$/.test(id)) {
         return signed(v)

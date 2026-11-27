@@ -1,5 +1,7 @@
 import type { HostContext, PluginEvent, PluginInstance, TransportState } from 'ivandaw-core'
-import factory, { type Meter } from './plugin'
+import { ID, VERSION } from './manifest'
+import factory, { type DevPresets, type Meter } from './plugin'
+import { cleanPresetName, parsePreset, presetFileName, presetText, sortPresetNames } from './presets'
 
 // Dev page: plays the plugin without ivan-daw. A stand-in host with a transport, a computer keyboard,
 // Web MIDI input when the browser allows it, a level meter, and a log.
@@ -19,7 +21,7 @@ const KEYS = ['a', 'w', 's', 'e', 'd', 'f', 't', 'g', 'y', 'h', 'u', 'j', 'k']
 const BLACK = new Set([1, 3, 6, 8, 10])
 
 let ctx: AudioContext | null = null
-let plugin: (PluginInstance & { meter?: (l: (m: Meter) => void) => () => void }) | null = null
+let plugin: (PluginInstance & { meter?: (l: (m: Meter) => void) => () => void; presets?: DevPresets }) | null = null
 let octave = 1
 let transport: TransportState = { playing: false, bpm: 120, beat: 0, numerator: 4, denominator: 4, loop: null }
 let transportTime = 0
@@ -142,8 +144,14 @@ async function start() {
         bar.style.width = `${Math.min(100, m.peak * 100)}%`
         $('voices').textContent = `voices ${m.voices}`
     })
+    plugin.presets?.onName((name) => {
+        if (document.activeElement !== $('preset-name')) {
+            $<HTMLInputElement>('preset-name').value = name
+        }
+    })
+    $<HTMLInputElement>('preset-name').value = plugin.presets?.name() ?? ''
     $('start').setAttribute('disabled', '')
-    for (const id of ['play', 'roundtrip', 'panic']) {
+    for (const id of ['play', 'roundtrip', 'panic', 'preset-save', 'preset-load']) {
         $(id).removeAttribute('disabled')
     }
     connectMidi()
@@ -173,6 +181,89 @@ async function connectMidi() {
         log('Web MIDI not allowed; use the computer keyboard')
     }
 }
+
+// The preset panel: edits presets/ at the repo root through the dev server (vite.assets.ts). Localhost only.
+const presetUrl = (name: string) => `/presets/${encodeURIComponent(presetFileName(name))}`
+
+function panelName(): string | null {
+    const input = $<HTMLInputElement>('preset-name')
+    const name = cleanPresetName(input.value)
+    if (!name) {
+        log('presets: type a NAME (letters, digits, space, - and _)')
+        return null
+    }
+    input.value = name
+    return name
+}
+
+async function listPresets(): Promise<string[]> {
+    const response = await fetch('/presets/index.json', { cache: 'no-store' })
+    const names = sortPresetNames(response.ok ? await response.json() : [])
+    const list = $<HTMLSelectElement>('preset-list')
+    const selected = list.value
+    list.replaceChildren(
+        ...names.map((name) => {
+            const option = document.createElement('option')
+            option.value = option.textContent = name
+            return option
+        }),
+    )
+    list.value = selected
+    return names
+}
+
+async function savePreset() {
+    const name = panelName()
+    if (!name || !plugin) return
+    const names = await listPresets()
+    const same = names.find((n) => n.toLowerCase() === name.toLowerCase())
+    if (same && !confirm(`Replace the preset ${same}?`)) return
+    const state = await plugin.getState()
+    const response = await fetch(presetUrl(name), { method: 'PUT', body: presetText(state.data as never, name) })
+    if (!response.ok) {
+        log(`presets: could not save ${name}: ${await response.text()}`)
+        return
+    }
+    plugin.presets?.setName(name)
+    plugin.presets?.changed()
+    await listPresets()
+    $<HTMLSelectElement>('preset-list').value = name
+    log(`presets: saved presets/${presetFileName(name)}`)
+}
+
+async function loadPreset() {
+    const name = panelName()
+    if (!name || !plugin) return
+    const response = await fetch(presetUrl(name), { cache: 'no-store' })
+    if (!response.ok) {
+        log(`presets: no preset ${name}`)
+        return
+    }
+    try {
+        await plugin.setState({ pluginId: ID, pluginVersion: VERSION, data: parsePreset(await response.text(), name) })
+        log(`presets: loaded ${name}`)
+    } catch (error) {
+        log(`presets: could not load ${name}: ${error}`)
+    }
+}
+
+async function deletePreset() {
+    const name = panelName()
+    if (!name || !confirm(`Delete presets/${presetFileName(name)}?`)) return
+    const response = await fetch(presetUrl(name), { method: 'DELETE' })
+    log(response.ok ? `presets: deleted ${name}` : `presets: no preset ${name}`)
+    plugin?.presets?.changed()
+    await listPresets()
+}
+
+const run = (action: () => Promise<void>) => () => void action().catch((error) => log(`presets: ${error}`))
+$('preset-list').addEventListener('change', () => {
+    $<HTMLInputElement>('preset-name').value = $<HTMLSelectElement>('preset-list').value
+})
+$('preset-save').addEventListener('click', run(savePreset))
+$('preset-load').addEventListener('click', run(loadPreset))
+$('preset-delete').addEventListener('click', run(deletePreset))
+void listPresets().catch((error) => log(`presets: ${error}`))
 
 buildKeys()
 $('start').addEventListener('click', () => void start().catch((error) => log(`error: ${error}`)))

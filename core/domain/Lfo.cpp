@@ -26,6 +26,15 @@ float Lfo::shape(LfoShape shape, double phase) {
         return static_cast<float>(2.0 * p - 1.5);
     case LfoShape::Square:
         return p < 0.5 ? 1.0f : 0.0f;
+    case LfoShape::Saw:
+        return static_cast<float>(1.0 - p);
+    case LfoShape::SawInv:
+        return static_cast<float>(p);
+    case LfoShape::SawSoftInv:
+        return static_cast<float>(1.0 - std::tanh(kSawSoftCurve * p) / std::tanh(kSawSoftCurve));
+    case LfoShape::SawSoft:
+        // 0 at the start of the cycle, rising fast, flattening toward 1, then back to 0.
+        return static_cast<float>(std::tanh(kSawSoftCurve * p) / std::tanh(kSawSoftCurve));
     case LfoShape::Sine:
     default:
         return static_cast<float>(0.5 + 0.5 * std::sin(2.0 * 3.14159265358979323846 * p));

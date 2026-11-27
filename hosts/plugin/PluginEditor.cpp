@@ -106,6 +106,8 @@ juce::var Editor::snapshot() {
     auto result = std::make_unique<juce::DynamicObject>();
     result->setProperty("params", juce::var(params.release()));
     result->setProperty("fxOrder", orders);
+    shownName_ = processor_.presetName();
+    result->setProperty("name", shownName_);
     return juce::var(result.release());
 }
 
@@ -169,6 +171,75 @@ void Editor::timerCallback() {
             browser_->emitEventIfBrowserIsVisible("fxOrder", juce::var(event.release()));
         }
     }
+    // A state the DAW loaded names its preset too.
+    const juce::String name = processor_.presetName();
+    if (name != shownName_) {
+        shownName_ = name;
+        browser_->emitEventIfBrowserIsVisible("presetName", name);
+    }
+}
+
+namespace {
+
+// The folder SAVE and LOAD on the PRESETS screen start in: the last one used (message thread), else Documents.
+juce::File& lastPresetFolder() {
+    static juce::File folder;
+    return folder;
+}
+
+juce::File presetFolder() {
+    const juce::File& last = lastPresetFolder();
+    return last.isDirectory() ? last : juce::File::getSpecialLocation(juce::File::userDocumentsDirectory);
+}
+
+void rememberPresetFolder(const juce::File& file) { lastPresetFolder() = file.getParentDirectory(); }
+
+} // namespace
+
+void Editor::savePresetFile(const juce::String& name, const juce::String& text, juce::WebBrowserComponent::NativeFunctionCompletion completion) {
+    chooser_ = std::make_unique<juce::FileChooser>("Save preset", presetFolder().getChildFile(name + ".brimstone"), "*.brimstone");
+    const auto mode = juce::FileBrowserComponent::saveMode | juce::FileBrowserComponent::canSelectFiles |
+                       juce::FileBrowserComponent::warnAboutOverwriting;
+    chooser_->launchAsync(mode, [this, text, completion](const juce::FileChooser& chooser) {
+        juce::File file = chooser.getResult();
+        if (file == juce::File()) {
+            completion(juce::String()); // cancelled
+            return;
+        }
+        file = file.withFileExtension("brimstone");
+        // The file's name is the preset's name, inside the file too.
+        const juce::String saved = file.getFileNameWithoutExtension();
+        juce::var data = juce::JSON::parse(text);
+        if (auto* object = data.getDynamicObject()) {
+            object->setProperty("name", saved);
+        }
+        if (!data.isObject() || !file.replaceWithText(juce::JSON::toString(data) + "\n")) {
+            completion(juce::String());
+            return;
+        }
+        rememberPresetFolder(file);
+        processor_.setPresetName(saved);
+        shownName_ = saved;
+        completion(saved);
+    });
+}
+
+void Editor::loadPresetFile(juce::WebBrowserComponent::NativeFunctionCompletion completion) {
+    chooser_ = std::make_unique<juce::FileChooser>("Load preset", presetFolder(), "*.brimstone");
+    const auto mode = juce::FileBrowserComponent::openMode | juce::FileBrowserComponent::canSelectFiles;
+    chooser_->launchAsync(mode, [completion](const juce::FileChooser& chooser) {
+        const juce::File file = chooser.getResult();
+        if (!file.existsAsFile() || file.getSize() > 1024 * 1024) {
+            completion(juce::var()); // cancelled, or not a preset
+            return;
+        }
+        rememberPresetFolder(file);
+        // The page reads it (presets.ts parsePreset) and loads it with loadState.
+        auto result = std::make_unique<juce::DynamicObject>();
+        result->setProperty("name", file.getFileNameWithoutExtension());
+        result->setProperty("text", file.loadFileAsString());
+        completion(juce::var(result.release()));
+    });
 }
 
 juce::WebBrowserComponent::Options Editor::browserOptions() {
@@ -210,9 +281,21 @@ juce::WebBrowserComponent::Options Editor::browserOptions() {
         .withNativeFunction("loadState", [this](const juce::Array<juce::var>& args, Completion completion) {
             if (!args.isEmpty()) {
                 endGestures();
-                processor_.applyState(readState(juce::JSON::toString(args[0], true)));
+                const StateData state = readState(juce::JSON::toString(args[0], true));
+                processor_.applyState(state);
+                shownName_ = state.name; // the page already shows it
             }
             completion({});
+        })
+        .withNativeFunction("savePresetFile", [this](const juce::Array<juce::var>& args, Completion completion) {
+            if (args.size() < 2) {
+                completion(juce::String());
+                return;
+            }
+            savePresetFile(args[0].toString(), args[1].toString(), std::move(completion));
+        })
+        .withNativeFunction("loadPresetFile", [this](const juce::Array<juce::var>&, Completion completion) {
+            loadPresetFile(std::move(completion));
         });
 }
 
